@@ -1,0 +1,45 @@
+{
+  "name": "ngin-t",
+  "version": "0.0.1",
+  "description": "A basic 2d platform game engine for html5|Canvas",
+  "keywords": [
+    "game",
+    "indie",
+    "engine",
+    "2d",
+    "platform"
+  ],
+  "homepage": "https://www.ngin-t.com/",
+  "author": "Fabio Toste <tostegroo@gmail.com> (http://fabiottoste.com)",
+  "contributors": [],
+  "main": "Gruntfile.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tostegroo/ngin-t"
+  },
+  "scripts": {},
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/aichaos/ngin-t/blob/master/LICENSE"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/aichaos/ngin-t/issues",
+    "email": "tostegroo@gmail.com"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "babel-cli": "^6.22.2",
+    "babel-preset-env": "^1.1.8",
+    "babel-preset-es2015-rollup": "^3.0.0",
+    "grunt": ">=0.4.5",
+    "grunt-babel": "^6.0.0",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-nodeunit": "^1.0.0",
+    "grunt-contrib-uglify": ">=0.11.1",
+    "grunt-contrib-watch": ">=0.6.1",
+    "grunt-rollup": "^1.0.1",
+    "rollup-plugin-babel": "^2.7.1"
+  }
+}
