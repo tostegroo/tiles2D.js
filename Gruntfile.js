@@ -42,7 +42,7 @@ module.exports = function(grunt)
             },
             files: {
                 'dest': './dist/js/<%= pkg.name %>.js',
-                'src' : './src/app.js'
+                'src' : './src/Ngint.js'
             }
         },
         uglify:

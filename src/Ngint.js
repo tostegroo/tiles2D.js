@@ -1,8 +1,8 @@
 /**
  * @author Fabio Toste
  */
- import MathHelper from './utils/mathHelper';
- import Vector2 from './geom/vector2';
+ import MathHelper from './core/utils/mathHelper';
+ import Vector2 from './core/geom/vector2';
 
  export class Ngint
  {
