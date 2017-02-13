@@ -9,8 +9,8 @@
 export default class Vector2
 {
     /**
-     * @param {number} [x=0] - position of the vector on the x axis
-     * @param {number} [y=0] - position of the vector on the y axis
+     * @param {number} [x = 0] - position of the vector on the x axis
+     * @param {number} [y = 0] - position of the vector on the y axis
      */
     constructor(x = 0, y = 0)
     {
@@ -51,6 +51,7 @@ export default class Vector2
      * Returns true if the given vector is equal to this vector
      *
      * @param {NGINT.Vector2} v - The vector to check
+     *
      * @returns {boolean} Whether the given vector equal to this vector
      */
     equals(v)
@@ -127,6 +128,7 @@ export default class Vector2
      * Adds to the vector the x and y position of a given vector
      *
      * @param {NGINT.Vector2} v - The vector to add
+     *
      * @return {NGINT.Vector2} this vector for chaining
      */
     add(v)
@@ -140,6 +142,7 @@ export default class Vector2
      * Adds to the vector x and y position a given scalar number
      *
      * @param {number} n - The number to add
+     *
      * @return {NGINT.Vector2} this vector for chaining
      */
     addScalar(n)
@@ -153,6 +156,7 @@ export default class Vector2
      * Subtracts from the vector the x and y position of a given vector
      *
      * @param {NGINT.Vector2} v - The vector to subtract
+     *
      * @return {NGINT.Vector2} this vector for chaining
      */
     subtract(v)
@@ -166,6 +170,7 @@ export default class Vector2
      * Subtracts from the vector x and y position a given scalar number
      *
      * @param {number} n - The number to subtract
+     *
      * @return {NGINT.Vector2} this vector for chaining
      */
     subtractScalar(n)
@@ -179,6 +184,7 @@ export default class Vector2
      * Multiplies to the vector the x and y position of a given vector
      *
      * @param {NGINT.Vector2} v - The vector to multiply
+     *
      * @return {NGINT.Vector2} this vector for chaining
      */
     multiply(v)
@@ -192,6 +198,7 @@ export default class Vector2
      * Multiplies to the vector x and y position a given scalar number
      *
      * @param {number} n - The number to multiply
+     *
      * @return {NGINT.Vector2} this vector for chaining
      */
     multiplyScalar(n)
@@ -205,6 +212,7 @@ export default class Vector2
      * Divides the vector for the x and y position of a given vector
      *
      * @param {NGINT.Vector2} v - The vector to divide
+     *
      * @return {NGINT.Vector2} this vector for chaining
      */
     divide(v)
@@ -218,6 +226,7 @@ export default class Vector2
      * Divides the vector for the x and y position of a given scalar number
      *
      * @param {number} n - The number to divide
+     *
      * @return {NGINT.Vector2} this vector for chaining
      */
     divideScalar(n)
@@ -227,13 +236,26 @@ export default class Vector2
         return this;
     }
 
-    clamp(min, max)
+    /**
+     * Clamps this vector's length to given min and max values
+     *
+     * @param {NGINT.Vector2} vmin - the min (vector2) value to clamp
+     * @param {NGINT.Vector2} vmax - the max (vector2) value to clamp
+     *
+     * @return {NGINT.Vector2} this vector for chaining
+     */
+    clamp(vmin, vmax)
     {
-		this.x = Math.max(min.x, Math.min(max.x, this.x));
-		this.y = Math.max(min.y, Math.min(max.y, this.y));
+		this.x = Math.max(vmin.x, Math.min(vmax.x, this.x));
+		this.y = Math.max(vmin.y, Math.min(vmax.y, this.y));
 		return this;
     }
 
+    /**
+     * Floors the x and y positions of the vector
+     *
+     * @return {NGINT.Vector2} this vector for chaining
+     */
     floor()
     {
 		this.x = Math.floor(this.x);
@@ -241,6 +263,11 @@ export default class Vector2
 		return this;
 	}
 
+    /**
+     * Ceils the x and y positions of the vector
+     *
+     * @return {NGINT.Vector2} this vector for chaining
+     */
 	ceil()
     {
 		this.x = Math.ceil(this.x);
@@ -248,6 +275,11 @@ export default class Vector2
 		return this;
 	}
 
+    /**
+     * Rounds the x and y positions of the vector
+     *
+     * @return {NGINT.Vector2} this vector for chaining
+     */
 	round()
     {
 		this.x = Math.round(this.x);
@@ -255,13 +287,11 @@ export default class Vector2
 		return this;
 	}
 
-    roundToZero()
-    {
-		this.x = (this.x < 0) ? Math.ceil(this.x) : Math.floor(this.x);
-		this.y = (this.y < 0) ? Math.ceil(this.y) : Math.floor(this.y);
-		return this;
-	}
-
+    /**
+     * Makes the x and y positions of the vector negative
+     *
+     * @return {NGINT.Vector2} this vector for chaining
+     */
 	negate()
     {
 		this.x = -this.x;
@@ -269,21 +299,28 @@ export default class Vector2
 		return this;
 	}
 
-    give(v)
+    /**
+     * Gives to a given vector the x and y positions of this vector
+     *
+     * @param {NGINT.Vector2} v - The vector to give the positions
+     *
+     * @return {NGINT.Vector2} this vector for chaining
+     */
+    equals(v)
     {
         v.x = this.x;
         v.y = this.y;
         return this;
     }
 
-    copy(v)
-    {
-        this.x = v.x;
-        this.y = v.y;
-        return this;
-    }
-
-    setAngle(n = 0)
+    /**
+     * Sets the angle of the vector
+     *
+     * @param {number} n - The angle (radians) to set
+     *
+     * @return {NGINT.Vector2} this vector for chaining
+     */
+    set angle(n = 0)
     {
         let length = Math.sqrt(this.x * this.x + this.y * this.y);
         this.x = Math.cos(n)* length;
@@ -291,31 +328,78 @@ export default class Vector2
         return this;
     }
 
-    setAngleDeg(n = 0)
+    /**
+     * Gets the angle of the vector
+     *
+     * @return {number} the angle of the vector in radians
+     */
+    get angle()
+    {
+        return Math.atan2(this.y, this.x);
+    }
+
+
+    /**
+     * Sets the angle of the vector
+     *
+     * @param {number} n - The angle (degrees) to set
+     *
+     * @return {NGINT.Vector2} this vector for chaining
+     */
+    set angleDeg(n = 0)
     {
         n *= 0.0174532925;
-        let length = Math.sqrt(this.x * this.x + this.y * this.y);
-        this.x = Math.cos(n)* length;
-        this.y = Math.sin(n) * length;
+        angle(n);
         return this;
     }
 
-    rotateBy(n)
+    /**
+     * Gets the angle of the vector
+     *
+     * @return {number} the angle of the vector in degrees
+     */
+    get angleDeg()
     {
-        let angle = getAngle();
+        return (Math.atan2(this.y, this.x) * 57.2957);
+    }
+
+    /**
+     * Rotates the angle by a given radian angle
+     *
+     * @param {number} n - The angle (radians) to rotate
+     *
+     * @return {NGINT.Vector2} this vector for chaining
+     */
+    rotate(n = 0)
+    {
+        let angle = angle();
         let length = Math.sqrt(this.x * this.x + this.y * this.y);
         this.x = Math.cos(n + angle) * length;
         this.y = Math.sin(n + angle) * length;
         return this;
     }
 
-    rotateByDeg(n)
+    /**
+     * Rotates the angle by a given degree angle
+     *
+     * @param {number} n - The angle (degrees) to rotate
+     *
+     * @return {NGINT.Vector2} this vector for chaining
+     */
+    rotateDeg(n)
     {
         n *= 0.0174532925;
-        rotateBy(n);
+        rotate(n);
         return this;
     }
 
+    /**
+     * Normalizes the vector ()
+     *
+     * @param {number} n - A scale value to normalize (defaults to 1.0)
+     *
+     * @return {NGINT.Vector2} this vector for chaining
+     */
     normalize(n = 1.0)
     {
         let length = Math.sqrt(this.x * this.x + this.y * this.y);
@@ -324,67 +408,91 @@ export default class Vector2
         return this;
     }
 
-    length()
+    /**
+     * Sets the length of the vector
+     *
+     * @param {number} n - The new length of the vector
+     *
+     * @return {NGINT.Vector2} this vector for chaining
+     */
+    set length(n)
+    {
+        normalize(1);
+        this.x *= n;
+        this.y *= n;
+        return this;
+    }
+
+    /**
+     * Gets the length of the vector
+     *
+     * @return {number} the length of the vector
+     */
+    get length()
     {
         return (Math.sqrt(this.x * this.x + this.y * this.y));
     }
 
-    setLength(newlength)
-    {
-        normalize(1);
-        this.x *= newlength;
-        this.y *= newlength;
-        return this;
-    }
-
-    getAngle()
-    {
-        return Math.atan2(this.y, this.x);
-    }
-
-    getAngleDeg()
-    {
-        return (Math.atan2(this.y, this.x) * 57.2957);
-    }
-
+    /**
+     * Makes a dot product operation between this vector and a given vector
+     *
+     * @param {NGINT.Vector2} v - The vector to make the dot operation
+     *
+     * @return {number} the result of dot operation
+     */
     dot(v)
     {
         return (this.x * v.x + this.y * v.y);
     }
 
-    clone()
+    /**
+     * Calculates the distance between this vector and a given vector
+     *
+     * @param {NGINT.Vector2} v - The vector calculate the distance to
+     *
+     * @return {number} the distance between the vectors
+     */
+    distance(v)
     {
-        return new Vector2(this.x, this.y);
+        return Math.sqrt(distanceSquared(v));
     }
 
-    distanceTo(v)
-    {
-        return Math.sqrt(distanceToSquared(v));
-    }
-
-    distanceToSquared(v)
+    /**
+     * Calculates the squared distance between this vector and a given vector
+     *
+     * @param {NGINT.Vector2} v - The vector calculate the squared distance to
+     *
+     * @return {number} the squared distance between the vectors
+     */
+    distanceSquared(v)
     {
         var dx = this.x - v.x, dy = this.y - v.y;
         return dx * dx + dy * dy;
     }
 
-    equals(v)
+    /**
+     * Makes a linear interpolation between this vector and a given vector
+     *
+     * @param {NGINT.Vector2} v - The vector to lerp to
+     * @param {number} a - The amount to interpolate between the vectors
+     *
+     * @return {NGINT.Vector2} this vector for chaining
+     */
+    lerp(v, a)
     {
-        return ((v.x === this.x) && (v.y === this.y));
-    }
-
-    lerp(v, aplha)
-    {
-        this.x += (v.x - this.x) * alpha;
-		this.y += (v.y - this.y) * alpha;
+        this.x += (v.x - this.x) * a;
+		this.y += (v.y - this.y) * a;
 		return this;
     }
 
-    lerpVectors(v1, v2, alpha)
-    {
-        return this.subVectors(v2, v1).multiplyScalar(alpha).add(v1);
-    }
-
+    /**
+     * Offsets this vector x and y positions by the given dx and dy values
+     *
+     * @param {number} dx - The offset value for x position
+     * @param {number} dy - The offset value for y position
+     *
+     * @return {NGINT.Vector2} this vector for chaining
+     */
     offset(dx = 0, dy = 0)
     {
         this.x += dx;
@@ -392,32 +500,17 @@ export default class Vector2
         return this;
     }
 
-    zero()
-    {
-        this.x = 0;
-        this.y = 0;
-        return this;
-    }
-
+    /**
+     * Makes this vector looks to the position of a given vector
+     *
+     * @param {NGINT.Vector2} v - The vector to look at
+     *
+     * @return {NGINT.Vector2} this vector for chaining
+     */
     lookAt(v)
     {
-        let vToTarget = new Vector2(v.x - x, v.y - y);
-        setAngle(vToTarget.getAngle());
+        let v = new Vector2(v.x - x, v.y - y);
+        angle(v.angle());
         return this;
-    }
-
-    minus(v)
-    {
-        return new Vector2(this.x -= v.x, this.y -= v.y);
-    }
-
-    times(value)
-    {
-        return new Vector2(this.x * value, this.y * value);
-    }
-
-    plus(v)
-    {
-        return new Vector2(this.x += v.x, this.y += v.y);
     }
 }
