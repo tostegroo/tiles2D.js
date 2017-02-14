@@ -13,8 +13,8 @@ import { AXIS } from '../constants';
 export default class Body
 {
     /**
-     * @param hitbox_width - The width of the body hitbox (used for calculations)
-     * @param hitbox_height - The height of the body hitbox (used for calculations)
+     * @param {NGINT.Sprite} sprite - The sprite to apply body transformations
+     *
      */
     constructor(sprite)
     {
@@ -60,8 +60,20 @@ export default class Body
             width: true,
             height: true
         }
+        this.contactPoint = {x:1, y:0.3};
 
-        this.gravityDirection = {x:1, y:1};
+        this.x = 0;
+        this.y = 0;
+        this.top = 0;
+        this.bottom = 0;
+        this.left = 0;
+        this.right = 0;
+        this.center = {x:0, y:0};
+        this.frictionLimits = {left:{min:0, max:0.3}, right:{min:0, max:0.3}, top:{min:1, max:1}, bottom:{min:1, max:1}};
+
+        this.environment = null;
+        this.environmentForceDirection = {x:1, y:1};
+
         this.hitbox = null;
 
         //Calculated physics properties
@@ -101,42 +113,50 @@ export default class Body
         }
 
         this.dragCoefficient = 0.6;
-        this.friction = 30;
-        this.bounciness = 0;
-        this.groundResistanceMultiply = {x:1, y:6};
-        this.groundResistanceDirection = {x:0, y:1};
+        this.friction = {x:30, y:30};
+        this.bounciness = {x:0, y:0};
+
+        this.resistanceMultiply = {x:1, y:6};
+        this.resistanceDirection = {x:0, y:1};
+
+        /**
+         * The variable to know if the tile is grabable or not
+         *
+         * @private
+         * @member {boolean}
+         */
+        this.grabbable = false;
 
         //Calculation physics properties
         this._velocity = {x:0, y:0};
         this._acceleration = {x:0, y:0};
-        this._direction = {x:0, y:0};
         this._restitution = {x:0, y:0};
         this._displacedVolume = 0;
-        this._contactPoint = new Rectangle(0, 0, 1, 0.3);
         this._overlapRectangle = new Rectangle(0, 0, 0, 0);
 
-        //Position variables
-        this._position = new {x:0, y:0};
-        this._lastPosition = new {x:0, y:0};
-        this._currentTile = new {x:0, y:0};
+        //Position variables for calculation
+        this._position = {x:0, y:0};
+        this._direction = {x:0, y:0};
+        this._lastPosition = {x:0, y:0};
+        this._currentTile = {x:0, y:0};
 
         //forces
-        this._movingForce = new {x:0, y:0};
-        this._movingImpulse = new {x:0, y:0};
+        this._movingForce = {x:0, y:0};
+        this._movingImpulse = {x:0, y:0};
 
-        this._gravityForce = new {x:0, y:0};
-        this._netForce = new {x:0, y:0};
-        this._groundForce = new {x:0, y:0};
-        this._dragForce = new {x:0, y:0};
-        this._buoyantForce = new {x:0, y:0};
+        this._environmentForce = {x:0, y:0};
+        this._netForce = {x:0, y:0};
+        this._groundForce = {x:0, y:0};
+        this._dragForce = {x:0, y:0};
+        this._buoyantForce = {x:0, y:0};
 
         //collision limits
         this.limits =
         {
-            minX: -Settings.BOUNDS.minX,
-            maxX: -Settings.BOUNDS.maxX,
-            minY: -Settings.BOUNDS.minY,
-            maxY: -Settings.BOUNDS.maxY
+            left: -Settings.BOUNDS.left,
+            right: -Settings.BOUNDS.right,
+            top: -Settings.BOUNDS.top,
+            bottom: -Settings.BOUNDS.bottom
         };
 
         /**
@@ -145,7 +165,7 @@ export default class Body
          * @private
          * @member {array}
          */
-        this.impulseList = [];
+        this._impulseList = [];
 
         /**
          * The array list of bodies in contact with this one
@@ -153,9 +173,10 @@ export default class Body
          * @private
          * @member {array}
          */
-        this.contactList = [];
+        this._contactList = [];
 
         this.sprite = sprite;
+        updateBounds();
     }
 
     set sprite(value)
@@ -213,7 +234,7 @@ export default class Body
     set weight(value)
     {
         this._weight = value;
-        this._mass = this._weight / settings.GRAVITY.y;
+        this._mass = this._weight / settings.ENVIRONMENT_FORCE.y;
     }
 
     get weight()
@@ -287,49 +308,76 @@ export default class Body
     {
         this._movingImpulse = {x:0, y:0};
         this._movingForce = {x:0, y:0};
+        return this;
+    }
+
+    updateBounds()
+    {
+        this.top = this.y - this.height;
+        this.bottom = this.y;
+        this.left = this.x;
+        this.right = this.x + this.width;
+        this.center = {x: this.x + (this.width / 2), y: this.y - (this.height / 2)};
+        this.frictionArea =
+        {
+            left: {min: this.top + (this.height * frictionLimits.left.min), max: this.top + (this.height * frictionLimits.left.max)},
+            right: {min: this.top + (this.height * frictionLimits.right.min), max: this.top + (this.height * frictionLimits.right.max)},
+            top: {min: this.left + (this.width * frictionLimits.top.min), max: this.left + (this.width * frictionLimits.top.max)},
+            bottom: {min: this.left + (this.width * frictionLimits.bottom.min), max: this.left + (this.width * frictionLimits.bottom.max)},
+        }
+        return this;
     }
 
     updatePhysicalProperties()
     {
         this._volume = this._size.meters.width * this._size.meters.height * this._size.meters.depth;
         this._density = this._mass / this._volume;
-        this._weight = this._mass * settings.GRAVITY.y;
+        this._weight = this._mass * settings.ENVIRONMENT_FORCE.y;
         this._verticalArea = this._size.meters.width * this._size.meters.depth;
         this._horizontalArea = this._size.meters.height * this._size.meters.depth;
+        return this;
     }
 
     applyForce(axis = "", force = 0)
     {
         if (force != 0 && (axis===AXIS.x || axis===AXIS.y))
             this._movingForce[axis] += force;
+
+        return this;
     }
 
     addImpulse(axis = "", impulse = 0, time = 0.1, delay = 0)
     {
         if(axis===AXIS.x || axis===AXIS.y)
             this._impulseList.push({axis:axis, impulse:impulse, time:time, delta:0, delay:delay, delayDelta:0});
+
+        return this;
     }
 
     applyImpulses(deltatime)
     {
         let i, ilen;
-        for (i = 0, ilen = this.impulseList.length; i < ilen; i++)
+        for (i = 0, ilen = this._impulseList.length; i < ilen; i++)
         {
-            this.impulseList[i].delayDelta += deltatime;
-            if (this.impulseList[i].impulse != 0 && this.impulseList[i].delayDelta >= this.impulseList[i].delay)
-                this.movingImpulse[this.impulseList[i].axis] += this.impulseList[i].impulse;
+            this._impulseList[i].delayDelta += deltatime;
+            if (this._impulseList[i].impulse != 0 && this._impulseList[i].delayDelta >= this._impulseList[i].delay)
+                this.movingImpulse[this._impulseList[i].axis] += this._impulseList[i].impulse;
         }
+
+        return this;
     }
 
     clearImpulses()
     {
         let i, ilen;
-        for (i = 0, ilen = this.impulseList.length; i < ilen; i++)
+        for (i = 0, ilen = this._impulseList.length; i < ilen; i++)
         {
-            //this.impulseList[i].delayDelta += deltatime;
-            if (this.impulseList[i].delta >= this.impulseList[i].time)
-                this.impulseList.splice(i, 1);
+            //this._impulseList[i].delayDelta += deltatime;
+            if (this._impulseList[i].delta >= this._impulseList[i].time)
+                this._impulseList.splice(i, 1);
         }
+
+        return this;
     }
 
     beginUpdate(deltatime = 0)

@@ -17,6 +17,12 @@ export default class World
         this.bodyList = [];
 		this.environmentList = [];
 
+        this.contactTile =
+        {
+            X: {: 0, y:0},
+            Y: {x: 0, y:0}
+        };
+
         this._time = 0;
     }
 
@@ -70,33 +76,60 @@ export default class World
             for (b = 0, blen = bodyList.length; b < blen; b++)
             {
                 body = b[b];
+
+                //Do everything that is needed before the update
                 body.beginUpdate(deltatime);
+                //Apply all the impulses
                 body.applyImpulse(deltatime);
 
+                //Projetcs the movement before calculations
                 this._projectMovement(b, deltatime);
+                //Calculates all the collisions
                 this._calculateCollision(b, deltatime);
+                //Do the update
                 body.update(deltatime);
 
                 //Reset forces
                 body.resetForces();
-
-                //Update dimensions properties
-                body.top = body.y - body.hitbox.height;
-                body.bottom = body.y;
-                body.centerY = body.y - (body.hitbox.height / 2);
-                body.left = body.x;
-                body.right = b1.x + b1.hitbox.width;
-                b1.centerX = b1.x + (b1.hitbox.width / 2);
-
+                //Update body bounds
+                body.updateBounds();
+                //Clear all finished impulses
                 body.clearImpulses();
 
                 for (e = 0, elen = environmentList.length; e < elen; e++)
                     environmentList[e].updateBodyInteration(body, deltatime);
 
+                //Do everything that is needed after the update
                 body.endUpdate(deltatime);
             }
 
             this._time += deltatime;
         }
+    }
+
+    _projectMovement(index = 0, deltatime = 0)
+    {
+        b = bodyList[index];
+
+        b.position = {x: b.x, y: b.y};
+
+        if(b.direction.x <= 0)
+        {
+            this.contactTile.X.x = Math.floor(b.frictionArea.left / settings.TILE_SIZE);
+            this.contactTile.Y.x = Math.floor((b.left - 0.1) / settings.TILE_SIZE);
+        }
+        else
+        {
+            this.contactTile.X.x = Math.floor(b.frictionArea.right / settings.TILE_SIZE);
+            this.contactTile.Y.x = Math.floor((b.right + 0.1) / settings.TILE_SIZE);
+        }
+
+
+        b.lastPosition = {x: b.position.x, y: b.position.y};
+    }
+
+    _calculateCollision(index = 0, deltatime = 0)
+    {
+
     }
 }

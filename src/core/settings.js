@@ -4,31 +4,31 @@
 export default
 {
     /**
-     * Gravity tunning for better physics
+     * Environment force tunning for better physics
      *
      * @static
      * @memberof NGINT.settings
      * @type {NGINT.Vector2}
      * @default Vector2(1, 2.2)
      */
-    GRAVITY_TUNNING:
+    ENVIRONMENT_FORCE_TUNNING:
     {
         x: 1,
         y: 2.2
     },
 
     /**
-     * Default Gravity to use in environments
+     * Default Environment force to use in environments
      *
      * @static
      * @memberof NGINT.settings
      * @type {object}
      * @default Vector2(0, 9.81)
      */
-    GRAVITY:
+    ENVIRONMENT_FORCE:
     {
-        x: 0 * GRAVITY_TUNNING.x,
-        y: 9.81 * GRAVITY_TUNNING.y
+        x: 0 * ENVIRONMENT_FORCE_TUNNING.x,
+        y: 9.81 * ENVIRONMENT_FORCE_TUNNING.y
     },
 
     /**
@@ -71,10 +71,10 @@ export default
      */
     BOUNDS:
     {
-        minX: -1000,
-        maxX: 1000,
-        minY: -1000,
-        maxY: 1000
+        left: -1000,
+        right: 1000,
+        top: -1000,
+        botom: 1000
     },
 
     /**
