@@ -15,6 +15,7 @@ export default class Tile extends Body
      */
     constructor(sprite)
     {
+        super();
         /**
          * The variable to know if the tile can be passed through
          *

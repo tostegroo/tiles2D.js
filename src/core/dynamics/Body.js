@@ -13,6 +13,7 @@ import { AXIS } from '../constants';
 export default class Body
 {
     /**
+     *
      * @param {NGINT.Sprite} sprite - The sprite to apply body transformations
      *
      */
@@ -62,8 +63,9 @@ export default class Body
         }
         this.contactPoint = {x:1, y:0.3};
 
-        this.x = 0;
-        this.y = 0;
+        this._x = 0;
+        this._y = 0;
+
         this.top = 0;
         this.bottom = 0;
         this.left = 0;
@@ -71,7 +73,7 @@ export default class Body
         this.center = {x:0, y:0};
         this.frictionLimits = {left:{min:0, max:0.3}, right:{min:0, max:0.3}, top:{min:1, max:1}, bottom:{min:1, max:1}};
 
-        this.environment = null;
+        this.environment = false;
         this.environmentForceDirection = {x:1, y:1};
 
         this.hitbox = null;
@@ -87,8 +89,8 @@ export default class Body
         this._weight = 0;
         this._density = 1;
         this._volume = 1;
-        this._verticalArea: 1,
-        this._horizontalArea: 1;
+        this._verticalArea = 1;
+        this._horizontalArea = 1;
         this._mass = 70;
         this._size =
         {
@@ -104,7 +106,7 @@ export default class Body
                 height: 1,
                 depth: 1
             },
-            ininital:
+            initial:
             {
                 width: 1,
                 height: 1,
@@ -128,27 +130,28 @@ export default class Body
         this.grabbable = false;
 
         //Calculation physics properties
-        this._velocity = {x:0, y:0};
-        this._acceleration = {x:0, y:0};
-        this._restitution = {x:0, y:0};
-        this._displacedVolume = 0;
+        this.velocity = {x:0, y:0};
+        this.acceleration = {x:0, y:0};
+        this.restitution = {x:0, y:0};
+        this.displacedVolume = 0;
+
         this._overlapRectangle = new Rectangle(0, 0, 0, 0);
 
         //Position variables for calculation
-        this._position = {x:0, y:0};
-        this._direction = {x:0, y:0};
-        this._lastPosition = {x:0, y:0};
-        this._currentTile = {x:0, y:0};
+        this.position = {x:0, y:0};
+        this.direction = {x:0, y:0};
+        this.lastPosition = {x:0, y:0};
+        this.currentTile = {x:0, y:0};
 
         //forces
-        this._movingForce = {x:0, y:0};
-        this._movingImpulse = {x:0, y:0};
+        this.movingForce = {x:0, y:0};
+        this.movingImpulse = {x:0, y:0};
 
-        this._environmentForce = {x:0, y:0};
-        this._netForce = {x:0, y:0};
-        this._groundForce = {x:0, y:0};
-        this._dragForce = {x:0, y:0};
-        this._buoyantForce = {x:0, y:0};
+        this.environmentForce = {x:0, y:0};
+        this.netForce = {x:0, y:0};
+        this.groundForce = {x:0, y:0};
+        this.dragForce = {x:0, y:0};
+        this.buoyantForce = {x:0, y:0};
 
         //collision limits
         this.limits =
@@ -165,7 +168,7 @@ export default class Body
          * @private
          * @member {array}
          */
-        this._impulseList = [];
+        this.impulseList = [];
 
         /**
          * The array list of bodies in contact with this one
@@ -176,7 +179,30 @@ export default class Body
         this._contactList = [];
 
         this.sprite = sprite;
-        updateBounds();
+        this.updatePhysicalProperties();
+        this.updateBounds();
+    }
+
+    set x(value)
+    {
+        this._x = value;
+        this._sprite.x = value;
+    }
+
+    get x()
+    {
+        return this._x;
+    }
+
+    set y(value)
+    {
+        this._y = value;
+        this._sprite.y = value;
+    }
+
+    get y()
+    {
+        return this._y;
     }
 
     set sprite(value)
@@ -199,8 +225,7 @@ export default class Body
     set mass(value)
     {
         this._mass = value;
-
-        updatePhysicalProperties();
+        this.updatePhysicalProperties();
     }
 
     get mass()
@@ -211,8 +236,7 @@ export default class Body
     set volume(value)
     {
         this._size.meters.depth = value / (this._size.meters.width * this._size.meters.height);
-
-        updatePhysicalProperties();
+        this.updatePhysicalProperties();
     }
 
     get volume()
@@ -234,7 +258,7 @@ export default class Body
     set weight(value)
     {
         this._weight = value;
-        this._mass = this._weight / settings.ENVIRONMENT_FORCE.y;
+        this._mass = this._weight / Settings.ENVIRONMENT_FORCE.y;
     }
 
     get weight()
@@ -266,9 +290,8 @@ export default class Body
     {
         this._size.pixels.width = value;
         this._size.initial.width = value;
-        this._size.meters.width = value / settings.PIXEL_METER_UNIT;
-
-        updatePhysicalProperties();
+        this._size.meters.width = value / Settings.PIXEL_METER_UNIT;
+        this.updatePhysicalProperties();
     }
 
     get width()
@@ -280,9 +303,8 @@ export default class Body
     {
         this._size.pixels.height = value;
         this._size.initial.height = value;
-        this._size.meters.height = value / settings.PIXEL_METER_UNIT;
-
-        updatePhysicalProperties();
+        this._size.meters.height = value / Settings.PIXEL_METER_UNIT;
+        this.updatePhysicalProperties();
     }
 
     get height()
@@ -294,9 +316,8 @@ export default class Body
     {
         this._size.pixels.depth = value;
         this._size.initial.depth = value;
-        this._size.meters.depth = value / settings.PIXEL_METER_UNIT;
-
-        updatePhysicalProperties();
+        this._size.meters.depth = value / Settings.PIXEL_METER_UNIT;
+        this.updatePhysicalProperties();
     }
 
     get depth()
@@ -306,8 +327,8 @@ export default class Body
 
     resetForces()
     {
-        this._movingImpulse = {x:0, y:0};
-        this._movingForce = {x:0, y:0};
+        this.movingImpulse = {x:0, y:0};
+        this.movingForce = {x:0, y:0};
         return this;
     }
 
@@ -320,10 +341,10 @@ export default class Body
         this.center = {x: this.x + (this.width / 2), y: this.y - (this.height / 2)};
         this.frictionArea =
         {
-            left: {min: this.top + (this.height * frictionLimits.left.min), max: this.top + (this.height * frictionLimits.left.max)},
-            right: {min: this.top + (this.height * frictionLimits.right.min), max: this.top + (this.height * frictionLimits.right.max)},
-            top: {min: this.left + (this.width * frictionLimits.top.min), max: this.left + (this.width * frictionLimits.top.max)},
-            bottom: {min: this.left + (this.width * frictionLimits.bottom.min), max: this.left + (this.width * frictionLimits.bottom.max)},
+            left: {min: this.top + (this.height * this.frictionLimits.left.min), max: this.top + (this.height * this.frictionLimits.left.max)},
+            right: {min: this.top + (this.height * this.frictionLimits.right.min), max: this.top + (this.height * this.frictionLimits.right.max)},
+            top: {min: this.left + (this.width * this.frictionLimits.top.min), max: this.left + (this.width * this.frictionLimits.top.max)},
+            bottom: {min: this.left + (this.width * this.frictionLimits.bottom.min), max: this.left + (this.width * this.frictionLimits.bottom.max)},
         }
         return this;
     }
@@ -332,24 +353,24 @@ export default class Body
     {
         this._volume = this._size.meters.width * this._size.meters.height * this._size.meters.depth;
         this._density = this._mass / this._volume;
-        this._weight = this._mass * settings.ENVIRONMENT_FORCE.y;
-        this._verticalArea = this._size.meters.width * this._size.meters.depth;
-        this._horizontalArea = this._size.meters.height * this._size.meters.depth;
+        this._weight = this._mass * Settings.ENVIRONMENT_FORCE.y;
+        this._verticalArea = this._size.meters.height * this._size.meters.depth * Settings.PIXEL_METER_UNIT;
+        this._horizontalArea = this._size.meters.width * this._size.meters.depth * Settings.PIXEL_METER_UNIT;
         return this;
     }
 
     applyForce(axis = "", force = 0)
     {
-        if (force != 0 && (axis===AXIS.x || axis===AXIS.y))
-            this._movingForce[axis] += force;
+        if (force != 0 && (axis===AXIS.X || axis===AXIS.Y))
+            this.movingForce[axis] += force;
 
         return this;
     }
 
     addImpulse(axis = "", impulse = 0, time = 0.1, delay = 0)
     {
-        if(axis===AXIS.x || axis===AXIS.y)
-            this._impulseList.push({axis:axis, impulse:impulse, time:time, delta:0, delay:delay, delayDelta:0});
+        if(axis===AXIS.X || axis===AXIS.Y)
+            this.impulseList.push({axis:axis, impulse:impulse, time:time, delta:0, delay:delay, delayDelta:0});
 
         return this;
     }
@@ -357,11 +378,11 @@ export default class Body
     applyImpulses(deltatime)
     {
         let i, ilen;
-        for (i = 0, ilen = this._impulseList.length; i < ilen; i++)
+        for (i = 0, ilen = this.impulseList.length; i < ilen; i++)
         {
-            this._impulseList[i].delayDelta += deltatime;
-            if (this._impulseList[i].impulse != 0 && this._impulseList[i].delayDelta >= this._impulseList[i].delay)
-                this.movingImpulse[this._impulseList[i].axis] += this._impulseList[i].impulse;
+            this.impulseList[i].delayDelta += deltatime;
+            if (this.impulseList[i].impulse != 0 && this.impulseList[i].delayDelta >= this.impulseList[i].delay)
+                this.movingImpulse[this.impulseList[i].axis] += this.impulseList[i].impulse;
         }
 
         return this;
@@ -370,11 +391,11 @@ export default class Body
     clearImpulses()
     {
         let i, ilen;
-        for (i = 0, ilen = this._impulseList.length; i < ilen; i++)
+        for (i = 0, ilen = this.impulseList.length; i < ilen; i++)
         {
-            //this._impulseList[i].delayDelta += deltatime;
-            if (this._impulseList[i].delta >= this._impulseList[i].time)
-                this._impulseList.splice(i, 1);
+            //this.impulseList[i].delayDelta += deltatime;
+            if (this.impulseList[i].delta >= this.impulseList[i].time)
+                this.impulseList.splice(i, 1);
         }
 
         return this;
@@ -387,10 +408,12 @@ export default class Body
 
     update(deltatime = 0)
     {
-
+        if(this._sprite)
+            this._sprite.update(deltatime);
     }
 
     endUpdate(deltatime = 0)
     {
 
     }
+}

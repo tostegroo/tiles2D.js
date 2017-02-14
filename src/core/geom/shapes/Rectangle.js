@@ -1,4 +1,4 @@
-import { SHAPES } from '../constants';
+import { SHAPES } from '../../constants';
 
 /**
  * Rectangle object is an area defined by its position, as indicated by its top-left corner

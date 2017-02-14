@@ -4,31 +4,17 @@
 export default
 {
     /**
-     * Environment force tunning for better physics
-     *
-     * @static
-     * @memberof NGINT.settings
-     * @type {NGINT.Vector2}
-     * @default Vector2(1, 2.2)
-     */
-    ENVIRONMENT_FORCE_TUNNING:
-    {
-        x: 1,
-        y: 2.2
-    },
-
-    /**
      * Default Environment force to use in environments
      *
      * @static
      * @memberof NGINT.settings
      * @type {object}
-     * @default Vector2(0, 9.81)
+     * @default Object {x: 0, y: 9.81}
      */
     ENVIRONMENT_FORCE:
     {
-        x: 0 * ENVIRONMENT_FORCE_TUNNING.x,
-        y: 9.81 * ENVIRONMENT_FORCE_TUNNING.y
+        x: 0 * 1,
+        y: 9.81 * 2.2
     },
 
     /**
@@ -85,5 +71,5 @@ export default
      * @type {boolean}
      * @default false
      */
-    PAUSED = false;
-};
+    PAUSED: false
+}

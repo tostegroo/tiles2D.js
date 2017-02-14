@@ -18,12 +18,15 @@ export default class Vector2
          * @member {number}
          * @default 0
          */
-        this.x = x;
+        this._x = 0;
 
         /**
          * @member {number}
          * @default 0
          */
+         this._y = 0;
+
+        this.x = x;
         this.y = y;
     }
 
@@ -79,7 +82,7 @@ export default class Vector2
      */
     get x()
     {
-        return this.x;
+        return this._x;
     }
 
     /**
@@ -89,7 +92,7 @@ export default class Vector2
      */
     set x(x = 0)
     {
-        this.x = x;
+        this._x = x;
     }
 
     /**
@@ -99,7 +102,7 @@ export default class Vector2
      */
     get y()
     {
-        return this.y;
+        return this._y;
     }
 
     /**
@@ -109,7 +112,7 @@ export default class Vector2
      */
     set y(y = 0)
     {
-        this.y = y;
+        this._y = y;
     }
 
     /**
@@ -509,8 +512,8 @@ export default class Vector2
      */
     lookAt(v)
     {
-        let v = new Vector2(v.x - x, v.y - y);
-        angle(v.angle());
+        let vector = new Vector2(v.x - x, v.y - y);
+        angle(vector.angle());
         return this;
     }
 }
