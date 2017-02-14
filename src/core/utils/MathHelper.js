@@ -1,21 +1,54 @@
-/**
- * @author Fabio Toste
- */
-import Vector2 from '../geom/vector2';
+import Vector2 from '../geom/Vector2';
 
+/**
+ * Two Pi.
+ *
+ * @static
+ * @constant
+ * @memberof NGINT
+ * @type {number}
+ */
+export const PI_2 = Math.PI * 2;
+
+/**
+ * Conversion factor for converting radians to degrees.
+ *
+ * @static
+ * @constant
+ * @memberof NGINT
+ * @type {number}
+ */
+export const RAD_TO_DEG = 180 / Math.PI;
+
+/**
+ * Conversion factor for converting degrees to radians.
+ *
+ * @static
+ * @constant
+ * @memberof NGINT
+ * @type {number}
+ */
+export const DEG_TO_RAD = Math.PI / 180;
+
+/**
+ * A Math Helper class with a some math functions
+ *
+ * @class
+ * @memberof NGINT
+ */
 export default class MathHelper
 {
-    static analogicToDigital(value, tolerance)
+    static analogicToDigital(v, t)
     {
-        value = percentageFit(value, tolerance, 1);
-        return (value == 0) ? 0 : (value > 0) ? 1 : -1;
+        v = percentageFit(v, t, 1);
+        return (v == 0) ? 0 : (v > 0) ? 1 : -1;
     }
 
-    static percentageFit(value, from, to)
+    static percentageFit(v, from, to)
     {
-        let signal = (value > 0) ? 1 : -1;
-        value = Math.abs(value);
-        let returnValue = value-from;
+        let signal = (v > 0) ? 1 : -1;
+        v = Math.abs(v);
+        let returnValue = v-from;
         let fitValue = to-from;
         returnValue  = (returnValue <0) ? 0 : returnValue;
         returnValue  = (returnValue > fitValue) ? fitValue  : returnValue;
@@ -38,15 +71,15 @@ export default class MathHelper
         return (origin - target) / speed;
     }
 
-    static dist1D(startPosition, endPosition)
+    static dist1D(start, end)
     {
-        return Math.sqrt(Math.abs(startPosition - endPosition));
+        return Math.sqrt(Math.abs(start - end));
     }
 
-    static dist2D(startPositionX, startPositionY, endPositionX, endPositionY)
+    static dist2D(startX, startY, endX, endY)
     {
-        let dirX = startPositionX - endPositionX;
-        let dirY = startPositionY - endPositionY;
+        let dirX = startX - endX;
+        let dirY = startY - endY;
         return Math.sqrt(dirX * dirX + dirY * dirY);
     }
 
@@ -63,30 +96,30 @@ export default class MathHelper
         return sum / total;
     }
 
-    static smoothAverage(number, number2, speed = 0.5)
+    static smoothAverage(n, n2, speed = 0.5)
     {
-        let sinSpeed = Math.sin(number) * (speed);
-        let cosSpeed = Math.cos(number) * (speed);
-        let sin = Math.sin(number2) * (1 - speed);
-        let cos = Math.sin(number2) * (1 - speed);
+        let sinSpeed = Math.sin(n) * (speed);
+        let cosSpeed = Math.cos(n) * (speed);
+        let sin = Math.sin(n2) * (1 - speed);
+        let cos = Math.sin(n2) * (1 - speed);
         return Math.atan2(sinSpeed + sin, cosSpeed + cos);
     }
 
-    static lerp(delta, from, to)
+    static lerp(from, to, a)
     {
-        if (delta > 1) { return to; }
-        if (delta < 0) { return from; }
-        return from + (to - from) * delta;
+        if (a > 1) { return to; }
+        if (a < 0) { return from; }
+        return from + (to - from) * a;
     }
 
-    static clamp(value, min, max)
+    static clamp(v, min, max)
     {
-        return Math.max(min, Math.min(max, value));
+        return Math.max(min, Math.min(max, v));
     }
 
-    static clampNum(value)
+    static clampNum(v)
     {
-        return clamp(value, 0, 1);
+        return clamp(v, 0, 1);
     }
 
     static rand(min, max)
@@ -94,23 +127,21 @@ export default class MathHelper
         return min + (max - min) * Math.random();
     }
 
-    static approach(current, target, increment)
+    static approach(c, t, i)
     {
-        increment = Math.abs(increment);
-        if (current < target)
-        {
-            return clamp(current + increment, current, target);
-        }
-        else if (current > target)
-        {
-            return clamp(current - increment, target, current);
-        }
-        return target;
+        i = Math.abs(i);
+
+        if (c < t)
+            return clamp(c + i, c, t);
+        else if (c > t)
+            return clamp(c - i, t, c);
+
+        return t;
     }
 
-    static isBetween(number, min, max)
+    static isBetween(n, min, max)
     {
-        return number >= min && number <= max;
+        return n >= min && n <= max;
     }
 
     static vectorRand()
@@ -118,13 +149,13 @@ export default class MathHelper
         return new Vector2(rand(-1, 1), rand(-1, 1));
     }
 
-    static fit(value, valueMin, valueMax, outMin, outMax)
+    static fit(v, vMin, vMax, outMin, outMax)
     {
-        return (value - valueMin) * (outMax - outMin) / (valueMax - valueMin) + outMin;
+        return (v - vMin) * (outMax - outMin) / (vMax - vMin) + outMin;
     }
 
-    static toFixed(value, factor)
+    static toFixed(v, factor)
     {
-        return Math.round(value * factor) / factor;
+        return Math.round(v * factor) / factor;
     }
 }
