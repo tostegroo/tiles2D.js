@@ -5,9 +5,31 @@
  * @constant
  * @name AXIS
  * @memberof NGINT
- * @type {object}
- * @property {number} X the x axis
- * @property {number} Y the y axis
+ */
+export const DRAG_COEFFICIENT =
+{
+    laminar_flat_plate: 0.001,
+    fast_aircraft: 0.021,
+    average_aircraft: 0.027,
+    slow_aircraft: 0.048,
+    turbulent_flat_plate: 0.005,
+    smooth_sphere: 0.1,
+    fast_car: 0.18,
+    average_car: 0.25,
+    slow_car: 0.37,
+    rocket: 0.75,
+    human: 1.1,
+    wire: 1.2,
+    building: 2.0
+}
+
+/**
+ * Constants for density of the materials
+ *
+ * @static
+ * @constant
+ * @name AXIS
+ * @memberof NGINT
  */
 export const MATERIAL_DENSITY =
 {

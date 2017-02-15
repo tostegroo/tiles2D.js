@@ -9,12 +9,12 @@ export default
      * @static
      * @memberof NGINT.settings
      * @type {object}
-     * @default Object {x: 0, y: 9.81}
+     * @default Object {x: 0, y: 0}
      */
-    ENVIRONMENT_FORCE:
+    ENVIRONMENT_MULTIPLY:
     {
-        x: 0 * 1,
-        y: 9.81 * 2.2
+        x: 1,
+        y: 2.2
     },
 
     /**

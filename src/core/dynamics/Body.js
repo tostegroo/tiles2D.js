@@ -1,6 +1,6 @@
 import Vector2 from '../geom/Vector2';
 import Rectangle from '../geom/shapes/Rectangle';
-import Settings from '../settings';
+import SETTINGS from '../settings';
 import { AXIS } from '../constants';
 
 /**
@@ -43,12 +43,6 @@ export default class Body
          */
         this.type = "";
 
-        this.onMax =
-        {
-            x: 0,
-            y: 0
-        }
-
         /**
          * Sets the state of the body, used for skip some calculations if it'is "sleeping"
          *
@@ -56,12 +50,6 @@ export default class Body
          * @default false
          */
         this.sleeping = false;
-        this.increase =
-        {
-            width: true,
-            height: true
-        }
-        this.contactPoint = {x:1, y:0.3};
 
         this._x = 0;
         this._y = 0;
@@ -71,13 +59,12 @@ export default class Body
         this.left = 0;
         this.right = 0;
         this.center = {x:0, y:0};
+
         this.frictionLimits = {left:{min:0, max:0.3}, right:{min:0, max:0.3}, top:{min:1, max:1}, bottom:{min:1, max:1}};
 
-        this.environment = false;
-        this.environmentForceDirection = {x:1, y:1};
+        this.dragCoefficient = 1.0;
 
-        this.hitbox = null;
-
+        //this.environmentForceDirection = {x:1, y:1};
         //Calculated physics properties
         /**
          * The weight of the body (set by calculation)
@@ -86,40 +73,18 @@ export default class Body
          * @default 0
          */
         this._sprite = null;
-        this._weight = 0;
         this._density = 1;
         this._volume = 1;
-        this._verticalArea = 1;
-        this._horizontalArea = 1;
+        this._area = {x:0, y:0};
         this._mass = 70;
         this._size =
         {
-            pixels:
-            {
-                width: 1,
-                height: 1,
-                depth: 1
-            },
-            meters:
-            {
-                width: 1,
-                height: 1,
-                depth: 1
-            },
-            initial:
-            {
-                width: 1,
-                height: 1,
-                depth: 1
-            }
+            pixels: {width: 1,height: 1,depth: 1},
+            meters: {width: 1, height: 1, depth: 1},
+            initial: {width: 1, height: 1, depth: 1}
         }
-
-        this.dragCoefficient = 0.6;
-        this.friction = {x:30, y:30};
-        this.bounciness = {x:0, y:0};
-
-        this.resistanceMultiply = {x:1, y:6};
-        this.resistanceDirection = {x:0, y:1};
+        this._friction = {left:0, right:0, top:0, bottom:0};
+        this._bounciness = {left:0, right:0, top:0, bottom:0};
 
         /**
          * The variable to know if the tile is grabable or not
@@ -129,37 +94,44 @@ export default class Body
          */
         this.grabbable = false;
 
-        //Calculation physics properties
+        //physics properties
         this.velocity = {x:0, y:0};
         this.acceleration = {x:0, y:0};
         this.restitution = {x:0, y:0};
         this.displacedVolume = 0;
-
-        this._overlapRectangle = new Rectangle(0, 0, 0, 0);
-
-        //Position variables for calculation
-        this.position = {x:0, y:0};
-        this.direction = {x:0, y:0};
-        this.lastPosition = {x:0, y:0};
-        this.currentTile = {x:0, y:0};
-
-        //forces
         this.movingForce = {x:0, y:0};
         this.movingImpulse = {x:0, y:0};
 
-        this.environmentForce = {x:0, y:0};
-        this.netForce = {x:0, y:0};
-        this.groundForce = {x:0, y:0};
-        this.dragForce = {x:0, y:0};
-        this.buoyantForce = {x:0, y:0};
+
+        //variables for calculation
+        this._environment = false;
+        this._position = {x:0, y:0};
+        this._direction = {x:0, y:0};
+        this._lastPosition = {x:0, y:0};
+        this._currentTile = {x:0, y:0};
+        this._environmentForce = {x:0, y:0};
+        this._netForce = {x:0, y:0};
+        this._groundForce = {x:0, y:0};
+        this._dragForce = {x:0, y:0};
+        this._buoyantForce = {x:0, y:0};
+        this._canScale =
+        {
+            x: true,
+            y: true
+        }
+        this._onMax =
+        {
+            x: 0,
+            y: 0
+        }
 
         //collision limits
         this.limits =
         {
-            left: -Settings.BOUNDS.left,
-            right: -Settings.BOUNDS.right,
-            top: -Settings.BOUNDS.top,
-            bottom: -Settings.BOUNDS.bottom
+            left: -SETTINGS.BOUNDS.left,
+            right: -SETTINGS.BOUNDS.right,
+            top: -SETTINGS.BOUNDS.top,
+            bottom: -SETTINGS.BOUNDS.bottom
         };
 
         /**
@@ -205,21 +177,90 @@ export default class Body
         return this._y;
     }
 
+    set width(value)
+    {
+        this._size.pixels.width = value;
+        this._size.initial.width = value;
+        this._size.meters.width = value / SETTINGS.PIXEL_METER_UNIT;
+        this.updatePhysicalProperties();
+
+        this._sprite.width = value;
+    }
+
+    get width()
+    {
+        return this._size.pixels.width;
+    }
+
+    set height(value)
+    {
+        this._size.pixels.height = value;
+        this._size.initial.height = value;
+        this._size.meters.height = value / SETTINGS.PIXEL_METER_UNIT;
+        this.updatePhysicalProperties();
+
+        this._sprite.height = value;
+    }
+
+    get height()
+    {
+        return this._size.pixels.height;
+    }
+
+    set depth(value)
+    {
+        this._size.pixels.depth = value;
+        this._size.initial.depth = value;
+        this._size.meters.depth = value / SETTINGS.PIXEL_METER_UNIT;
+        this.updatePhysicalProperties();
+    }
+
+    get depth()
+    {
+        return this._size.pixels.depth;
+    }
+
     set sprite(value)
     {
         this._sprite = value;
 
-        this.width = 10;
-        this.height = 10;
-        this.depth = 8;
+        this.width = this._sprite.width;
+        this.height = this._sprite.height;
+        this.depth = this._sprite.width;
 
-        if(this.hitbox == null)
-            this.hitbox = new Rectangle(0, 0, this.width, this.height);
+        this.x = this._sprite.x;
+        this.y = this._sprite.y;
     }
 
     get sprite()
     {
         return this._sprite;
+    }
+
+    set friction(value)
+    {
+        if(typeof(value)=='number')
+            this._friction = {left:value, right:value, top:value, bottom:value};
+        else
+            this._friction = value;
+    }
+
+    get friction()
+    {
+        return this._friction;
+    }
+
+    set bounciness(value)
+    {
+        if(typeof(value)=='number')
+            this._bounciness = {left:value, right:value, top:value, bottom:value};
+        else
+            this._bounciness = value;
+    }
+
+    get bounciness()
+    {
+        return this._bounciness;
     }
 
     set mass(value)
@@ -255,74 +296,17 @@ export default class Body
         return this._density;
     }
 
-    set weight(value)
+    set area(value)
     {
-        this._weight = value;
-        this._mass = this._weight / Settings.ENVIRONMENT_FORCE.y;
+        if(typeof(value)=='number')
+            this._area = {x:value, y:value};
+        else
+            this._area = value;
     }
 
-    get weight()
+    get area()
     {
-        return this._weight;
-    }
-
-    set verticalArea(value)
-    {
-        this._verticalArea = value;
-    }
-
-    get verticalArea()
-    {
-        return this._verticalArea;
-    }
-
-    set horizontalArea(value)
-    {
-        this._horizontalArea = value;
-    }
-
-    get horizontalArea()
-    {
-        return this._horizontalArea;
-    }
-
-    set width(value)
-    {
-        this._size.pixels.width = value;
-        this._size.initial.width = value;
-        this._size.meters.width = value / Settings.PIXEL_METER_UNIT;
-        this.updatePhysicalProperties();
-    }
-
-    get width()
-    {
-        return this._size.pixels.width;
-    }
-
-    set height(value)
-    {
-        this._size.pixels.height = value;
-        this._size.initial.height = value;
-        this._size.meters.height = value / Settings.PIXEL_METER_UNIT;
-        this.updatePhysicalProperties();
-    }
-
-    get height()
-    {
-        return this._size.pixels.height;
-    }
-
-    set depth(value)
-    {
-        this._size.pixels.depth = value;
-        this._size.initial.depth = value;
-        this._size.meters.depth = value / Settings.PIXEL_METER_UNIT;
-        this.updatePhysicalProperties();
-    }
-
-    get depth()
-    {
-        return this._size.pixels.depth;
+        return this._area;
     }
 
     resetForces()
@@ -353,9 +337,8 @@ export default class Body
     {
         this._volume = this._size.meters.width * this._size.meters.height * this._size.meters.depth;
         this._density = this._mass / this._volume;
-        this._weight = this._mass * Settings.ENVIRONMENT_FORCE.y;
-        this._verticalArea = this._size.meters.height * this._size.meters.depth * Settings.PIXEL_METER_UNIT;
-        this._horizontalArea = this._size.meters.width * this._size.meters.depth * Settings.PIXEL_METER_UNIT;
+        this._area.x = this._size.meters.height * this._size.meters.depth;
+        this._area.y = this._size.meters.width * this._size.meters.depth;
         return this;
     }
 
@@ -375,7 +358,7 @@ export default class Body
         return this;
     }
 
-    applyImpulses(deltatime)
+    applyImpulses(deltatime = 0)
     {
         let i, ilen;
         for (i = 0, ilen = this.impulseList.length; i < ilen; i++)
@@ -388,12 +371,12 @@ export default class Body
         return this;
     }
 
-    clearImpulses()
+    clearImpulses(deltatime = 0)
     {
-        let i, ilen;
-        for (i = 0, ilen = this.impulseList.length; i < ilen; i++)
+        let i;
+        for (i = 0; i < this.impulseList.length; i++)
         {
-            //this.impulseList[i].delayDelta += deltatime;
+            this.impulseList[i].delta += deltatime;
             if (this.impulseList[i].delta >= this.impulseList[i].time)
                 this.impulseList.splice(i, 1);
         }

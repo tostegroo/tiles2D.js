@@ -1,5 +1,6 @@
 import Body from './Body';
 import { AXIS } from '../constants';
+import { DRAG_COEFFICIENT } from './dynamicConstants';
 
 /**
   * The Player class can be used for a playable character
@@ -19,15 +20,20 @@ export default class Player extends Body
         this.run = false;
         this.onWater = false;
 
+        this.movey = false;
+
         this.crouchScale = 0.6;
         this.walkForce = 800;
-        this.jumpImpulse = 2600; //6500;
+        this.jumpImpulse = 2600;
         this.runMultiply = 2;
         this.runJumpMultiply = 1;
-        this.wallJumpImpulse = 1200; //3000;
+        this.wallJumpImpulse = 120;
         this.forceDirection = {x:0, y:0};
 
-        this.mass = 30;
+        this.dragCoefficient = DRAG_COEFFICIENT.human;
+        this.mass = 80;
+        this.friction = 30.0;
+        this.bounciness = 0;
     }
 
     walkMove(value)
@@ -61,6 +67,24 @@ export default class Player extends Body
         this.forceDirection.x = 0;
     }
 
+    walkUp()
+    {
+        this.movey = true;
+        this.forceDirection.y = -1;
+    }
+
+    walkDown()
+    {
+        this.movey = true;
+        this.forceDirection.y = 1;
+    }
+
+    stopy()
+    {
+        this.movey = false;
+        this.forceDirection.y = 0;
+    }
+
     jump()
     {
         /*if (this.onWater==false)
@@ -87,11 +111,13 @@ export default class Player extends Body
         {
             this.applyImpulse("y", jumpImpulse * -gravitySide, 0.05);
         }*/
+
+        this.addImpulse(AXIS.Y, this.jumpImpulse * -1, 0.05);
     }
 
     stopJump()
     {
-        applyForce(AXIS.Y, this.jumpImpulse * this.environmentForceDirection.y);
+        this.applyForce(AXIS.Y, this.jumpImpulse * 1);
     }
 
     crouch()
@@ -117,11 +143,14 @@ export default class Player extends Body
     {
         super.beginUpdate(deltatime);
 
-        if (this.move == true)
+        if (this.move)
         {
-            let forceMultiply = (this.run == true) ? this.runMultiply : 1;
+            let forceMultiply = (this.run) ? this.runMultiply : 1;
             this.applyForce(AXIS.X, this.walkForce * forceMultiply * this.forceDirection.x);
         }
+
+        //if (this.movey)
+            //this.applyForce(AXIS.Y, this.walkForce * this.forceDirection.y);
     }
 
     update(deltatime)
