@@ -34,6 +34,7 @@ export default class InputManager
         if(index==-1)
         {
             input.name = name;
+            input.canHit = true;
 
             if(input.hasOwnProperty('key'))
                 input.key = this.keyboard.normalize(input.key);

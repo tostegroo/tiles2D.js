@@ -24,7 +24,7 @@ export default class Player extends Body
 
         this.crouchScale = 0.6;
         this.walkForce = 800;
-        this.jumpImpulse = 2600;
+        this.jumpImpulse = 6000;
         this.runMultiply = 2;
         this.runJumpMultiply = 1;
         this.wallJumpImpulse = 120;
@@ -111,6 +111,8 @@ export default class Player extends Body
         {
             this.applyImpulse("y", jumpImpulse * -gravitySide, 0.05);
         }*/
+
+        console.log('jump');
 
         this.addImpulse(AXIS.Y, this.jumpImpulse * -1, 0.05);
     }

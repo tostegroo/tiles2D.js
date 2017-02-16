@@ -36,10 +36,13 @@ export default class KeyboardInput
         for(i = 0, len = item.key.length; i < len ; i++)
         {
             let char = item.key[i];
-            if(this.key[char] && this.key[char].state && this.key[char].canHit)
+            if(this.key[char] && this.key[char].state && item.canHit)
             {
                 if (item.oneHit)
+                {
+                    item.canHit = false;
                     this.key[char] = false;
+                }
 
                 if(item.onPress)
                     item.onPress();
@@ -50,6 +53,7 @@ export default class KeyboardInput
                 if(item.onRelease)
                     item.onRelease();
 
+                item.canHit = true;
                 this.key[char] = false;
             }
         }
@@ -70,12 +74,12 @@ export default class KeyboardInput
     _onKeyDown(e)
     {
         let char = e.keyCode || e.which;
-        this.key[char] = {state: true, canHit: true};
+        this.key[char] = {state: true};
     }
 
     _onKeyUp(e)
     {
         let char = e.keyCode || e.which;
-        this.key[char] = {state: false, canHit: false};
+        this.key[char] = {state: false};
     }
 }

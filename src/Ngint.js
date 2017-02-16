@@ -34,7 +34,7 @@ export class Ngint
         this.inputManager.addInput("right", {key:[KEYBOARD.D, KEYBOARD.RIGHT], onPress: player.walkRight.bind(player), onRelease: player.stop.bind(player)});
         this.inputManager.addInput("left", {key:[KEYBOARD.A, KEYBOARD.LEFT], onPress: player.walkLeft.bind(player), onRelease: player.stop.bind(player)});
         this.inputManager.addInput("crouch", { key:[KEYBOARD.DOWN, KEYBOARD.S], onPress: player.crouch.bind(player), onRelease: player.standUp.bind(player)});
-        this.inputManager.addInput("jump", { key:KEYBOARD.SPACE, onPress: player.jump.bind(player), onRelease: player.stopJump.bind(player)});
+        this.inputManager.addInput("jump", { key:KEYBOARD.SPACE, onPress: player.jump.bind(player), onRelease: player.stopJump.bind(player), oneHit: true});
 
         //this.inputManager.addInput("up", {key:[KEYBOARD.W, KEYBOARD.UP], onPress: player.walkUp.bind(player), onRelease: player.stopy.bind(player)});
         //this.inputManager.addInput("down", {key:[KEYBOARD.S, KEYBOARD.DOWN], onPress: player.walkDown.bind(player), onRelease: player.stopy.bind(player)});
