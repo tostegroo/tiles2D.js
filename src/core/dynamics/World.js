@@ -94,7 +94,12 @@ export default class World
                 body.applyImpulses(deltatime);
 
                 //Projetcs the movement before calculations
-                this._projectMovement(body, deltatime);
+                this._updateForces(body, deltatime);
+            }
+
+            //Body collision loop
+            for (b = 0, blen = this.bodyList.length; b < blen; b++)
+            {
                 //Calculates all the collisions
                 this._calculateCollisions(body, AXIS.X);
                 this._calculateCollisions(body, AXIS.Y);
@@ -117,10 +122,8 @@ export default class World
         }
     }
 
-    _projectMovement(body, deltatime = 0)
+    _updateForces(body, deltatime = 0)
     {
-        let vdir
-
         body._position = {x: body.x, y: body.y};
 
         body._currentTile.x = Math.floor(body.left / SETTINGS.TILE_SIZE);
@@ -134,53 +137,59 @@ export default class World
         this._calculateForces(body, AXIS.Y, deltatime);
     }
 
-    _calculateCollisions(body, axis)
-    {
-        let min = {x:0, y:0}
-        let max = {x:1920, y:800}
-
-        body._over[axis] = 0;
-        if(body._position[axis] < min[axis])
-        {
-            body._over[axis] = 1;
-            body._position[axis] = min[axis];
-        }
-
-        if(body._position[axis] > max[axis])
-        {
-            body._over[axis] = -1;
-            body._position[axis] = max[axis];
-        }
-
-        body[axis] = body._position[axis];
-    }
-
     _calculateForces(body, axis, deltatime = 0)
     {
         let vdir = (body.velocity[axis] > 0) ? -1 : (body.velocity[axis] < 0) ? 1 : 0;
         let i_axis = axis==AXIS.X ? AXIS.Y : AXIS.X;
-        let tileFriction = 5.0;
-        let bodyFriction = body.friction.bottom;
 
-        body._direction[axis] = body._position[axis] - body[axis];
+        body._frictionalForce[axis] = 0;
+        if(body._impulseDirection[i_axis]!=0)
+        {
+            //to do friction calculation (cbody friction * body friction);
+            let friction_coefficient = 0.3 * body._friction[i_axis][body._impulseDirection[i_axis]];
+            body._frictionalForce[axis] = friction_coefficient * body._netForce[i_axis] * -body.velocity[axis] * -body._impulseDirection[i_axis];
+        }
 
         body._environmentForce[axis] = (body.mass * body._environment.force[axis]);
         body._dragForce[axis] = ((body._environment.density * body.dragCoefficient * body.area[axis]) / 2) * Math.pow(body.velocity[axis], 2) * vdir;
-        body._buoyantForce[axis] = body.displacedVolume * body._environment.density * -body._environment.force[axis];
+        body._buoyantForce[axis] = body._displacedVolume * body._environment.density * -body._environment.force[axis];
+        body._netForce[axis] = body._movingForce[axis] + body._movingImpulse[axis] + body._environmentForce[axis] + body._dragForce[axis] + body._frictionalForce[axis] + body._buoyantForce[axis];
 
-        if(body._over[i_axis]!=0)
-        {
-            //to do ground forces calculation
-            let tileFriction = 5.0;
-            let bodyFriction = body.friction.bottom;
-
-            body._groundForce[axis] = -(bodyFriction * tileFriction) * body.velocity[axis];
-        }
-
-        body._netForce[axis] = body._movingForce[axis] + body._movingImpulse[axis] + body._environmentForce[axis] + body._dragForce[axis] + body._groundForce[axis] + body._buoyantForce[axis];
         body.acceleration[axis] = body._netForce[axis] / body.mass;
         body.velocity[axis] += deltatime * body.acceleration[axis];
         body._position[axis] += (deltatime * body.velocity[axis]) * SETTINGS.PIXEL_METER_UNIT;
+    }
+
+    _calculateCollisions(body, axis)
+    {
+        let min = {x:50, y:100}
+        let max = {x:1800, y:800}
+        let collider_bounciness = 0;
+
+        body._direction[axis] = body._position[axis] - body[axis];
+        let vdir = (body._direction[axis] > 0) ? -1 : (body._direction[axis] < 0) ? 1 : 0;
+
+        body._impulseDirection[axis] = 0;
+
+        if(body._position[axis] < min[axis])
+        {
+            body._impulseDirection[axis] = 1;
+            body._position[axis] = min[axis];
+
+            body._restitution[axis] = (collider_bounciness + body._bounciness[axis]['1']) / 2;
+            body.velocity[axis] *= body._restitution[axis] * -vdir;
+        }
+
+        if(body._position[axis] > max[axis])
+        {
+            body._impulseDirection[axis] = -1;
+            body._position[axis] = max[axis];
+
+            body._restitution[axis] = (collider_bounciness + body._bounciness[axis]['-1']) / 2;
+            body.velocity[axis] *= body._restitution[axis] * vdir;
+        }
+
+        body[axis] = body._position[axis];
     }
 
     _upadteContactTiles(body)

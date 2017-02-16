@@ -68,7 +68,7 @@ export default class Body
         this.right = 0;
         this.center = {x:0, y:0};
 
-        this.frictionLimits = {left:{min:0, max:0.3}, right:{min:0, max:0.3}, top:{min:1, max:1}, bottom:{min:1, max:1}};
+        this.frictionLimits = {left:{min:0, max:0.3}, right:{min:0, max:0.3}, top:{min:0, max:1}, bottom:{min:0, max:1}};
 
         this.dragCoefficient = 1.0;
 
@@ -91,24 +91,24 @@ export default class Body
             meters: {width: 1, height: 1, depth: 1},
             initial: {width: 1, height: 1, depth: 1}
         }
-        this._friction = {left:0, right:0, top:0, bottom:0};
-        this._bounciness = {left:0, right:0, top:0, bottom:0};
+        this._friction = {x: {'1':0, '-1':0}, y: {'1':0, '-1':0}};
+        this._bounciness = {x: {'1':0, '-1':0}, y: {'1':0, '-1':0}};
 
         //physics properties
         this.velocity = {x:0, y:0};
         this.acceleration = {x:0, y:0};
-        this.restitution = {x:0, y:0};
-        this.displacedVolume = 0;
 
         //variables for calculation
         this._environment = false;
+        this._displacedVolume = 0;
+        this._restitution = {x:0, y:0};
         this._position = {x:0, y:0};
         this._direction = {x:0, y:0};
         this._lastPosition = {x:0, y:0};
         this._currentTile = {x:0, y:0};
         this._environmentForce = {x:0, y:0};
         this._netForce = {x:0, y:0};
-        this._groundForce = {x:0, y:0};
+        this._frictionalForce = {x:0, y:0};
         this._dragForce = {x:0, y:0};
         this._buoyantForce = {x:0, y:0};
         this._movingForce = {x:0, y:0};
@@ -120,7 +120,7 @@ export default class Body
             top: true,
             bottom: true
         }
-        this._over =
+        this._impulseDirection =
         {
             x: 0,
             y: 0
@@ -232,27 +232,41 @@ export default class Body
     set friction(value)
     {
         if(typeof(value)=='number')
-            this._friction = {left:value, right:value, top:value, bottom:value};
+            this._friction = {x: {'1': value, '-1': value}, y: {'1': value, '-1': value}};
+        else if(typeof(value)=='object')
+            this._friction = {x: {'1': value.left, '-1': value.right}, y: {'1': value.top, '-1': value.bottom}};
         else
-            this._friction = value;
+            this._friction = this._friction;
     }
 
     get friction()
     {
-        return this._friction;
+        return {
+            left: this._friction.x['1'],
+            right: this._friction.x['-1'],
+            top: this._friction.y['1'],
+            bottom: this._friction.y['-1'],
+        };
     }
 
     set bounciness(value)
     {
         if(typeof(value)=='number')
-            this._bounciness = {left:value, right:value, top:value, bottom:value};
+            this._bounciness = {x: {'1': value, '-1': value}, y: {'1': value, '-1': value}};
+        else if(typeof(value)=='object')
+            this._bounciness = {x: {'1': value.left, '-1': value.right}, y: {'1': value.top, '-1': value.bottom}};
         else
-            this._bounciness = value;
+            this._bounciness = this._bounciness;
     }
 
     get bounciness()
     {
-        return this._bounciness;
+        return {
+            left: this._bounciness.x['1'],
+            right: this._bounciness.x['-1'],
+            top: this._bounciness.y['1'],
+            bottom: this._bounciness.y['-1'],
+        };
     }
 
     set mass(value)
@@ -371,7 +385,6 @@ export default class Body
         for (i = 0, ilen = this._impulseList.length; i < ilen; i++)
         {
             this._impulseList[i]._dt += deltatime;
-
             if (this._impulseList[i].force != 0 && this._impulseList[i]._dt >= this._impulseList[i].delay)
                 this._movingImpulse[this._impulseList[i].axis] += this._impulseList[i].force;
         }

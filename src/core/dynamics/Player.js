@@ -24,8 +24,8 @@ export default class Player extends Body
         this.movey = false;
 
         this.crouchScale = 0.6;
-        this.walkForce = 800;
-        this.jumpImpulse = 13000;
+        this.walkForce = 1200;
+        this.jumpImpulse = 8000;
 
         this.runMultiply = 2;
         this.runJumpMultiply = 1;
@@ -34,7 +34,7 @@ export default class Player extends Body
 
         this.dragCoefficient = DRAG_COEFFICIENT.human;
         this.mass = 80;
-        this.friction = 30.0;
+        this.friction = 0.8;
         this.bounciness = 0;
     }
 
@@ -93,11 +93,13 @@ export default class Player extends Body
         {
             case ENVIRONMENT_TYPE.air:
 
-                if(this._over.y!=0)
-                    this.addImpulse(AXIS.Y, this.jumpImpulse * this._over.y, 0.1);
+                if(this._impulseDirection.y!=0)
+                    this.addImpulse(AXIS.Y, this.jumpImpulse * this._impulseDirection.y, 0.1);
 
                 break;
+
             case ENVIRONMENT_TYPE.water:
+
                 this.applyImpulse(AXIS.Y, this.jumpImpulse * -1, 0.05);
                 break;
         }
