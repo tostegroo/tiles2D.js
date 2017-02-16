@@ -44,6 +44,14 @@ export default class Body
         this.type = "";
 
         /**
+         * The variable to know if the tile is grabable or not
+         *
+         * @private
+         * @member {boolean}
+         */
+        this.grabbable = false;
+
+        /**
          * Sets the state of the body, used for skip some calculations if it'is "sleeping"
          *
          * @member {boolean}
@@ -86,22 +94,11 @@ export default class Body
         this._friction = {left:0, right:0, top:0, bottom:0};
         this._bounciness = {left:0, right:0, top:0, bottom:0};
 
-        /**
-         * The variable to know if the tile is grabable or not
-         *
-         * @private
-         * @member {boolean}
-         */
-        this.grabbable = false;
-
         //physics properties
         this.velocity = {x:0, y:0};
         this.acceleration = {x:0, y:0};
         this.restitution = {x:0, y:0};
         this.displacedVolume = 0;
-        this.movingForce = {x:0, y:0};
-        this.movingImpulse = {x:0, y:0};
-
 
         //variables for calculation
         this._environment = false;
@@ -114,25 +111,20 @@ export default class Body
         this._groundForce = {x:0, y:0};
         this._dragForce = {x:0, y:0};
         this._buoyantForce = {x:0, y:0};
+        this._movingForce = {x:0, y:0};
+        this._movingImpulse = {x:0, y:0};
         this._canScale =
         {
-            x: true,
-            y: true
+            left: true,
+            right: true,
+            top: true,
+            bottom: true
         }
-        this._onMax =
+        this._over =
         {
             x: 0,
             y: 0
         }
-
-        //collision limits
-        this.limits =
-        {
-            left: -SETTINGS.BOUNDS.left,
-            right: -SETTINGS.BOUNDS.right,
-            top: -SETTINGS.BOUNDS.top,
-            bottom: -SETTINGS.BOUNDS.bottom
-        };
 
         /**
          * The array list of impulses to appply to this body
@@ -140,7 +132,7 @@ export default class Body
          * @private
          * @member {array}
          */
-        this.impulseList = [];
+        this._impulseList = [];
 
         /**
          * The array list of bodies in contact with this one
@@ -309,13 +301,6 @@ export default class Body
         return this._area;
     }
 
-    resetForces()
-    {
-        this.movingImpulse = {x:0, y:0};
-        this.movingForce = {x:0, y:0};
-        return this;
-    }
-
     updateBounds()
     {
         this.top = this.y - this.height;
@@ -345,42 +330,65 @@ export default class Body
     applyForce(axis = "", force = 0)
     {
         if (force != 0 && (axis===AXIS.X || axis===AXIS.Y))
-            this.movingForce[axis] += force;
+            this._movingForce[axis] += force;
 
         return this;
     }
 
-    addImpulse(axis = "", impulse = 0, time = 0.1, delay = 0)
+    clearForces()
+    {
+        this._movingForce = {x:0, y:0};
+        return this;
+    }
+
+    addImpulse(axis = "", force = 0, time = 0.1, delay = 0)
     {
         if(axis===AXIS.X || axis===AXIS.Y)
-            this.impulseList.push({axis:axis, impulse:impulse, time:time, delta:0, delay:delay, delayDelta:0});
+            this._impulseList.push({axis:axis, force:force, time:delay+time, delay:delay, _dt:0});
 
+        return this;
+    }
+
+    removeImpulses(axis = "")
+    {
+        if(axis===AXIS.X || axis===AXIS.Y)
+        {
+            this._movingImpulse[axis] = 0;
+
+            let i;
+            for (i = 0; i < this._impulseList.length; i++)
+            {
+                if(this._impulseList[i].axis==axis)
+                    this._impulseList.splice(i, 1);
+            }
+        }
         return this;
     }
 
     applyImpulses(deltatime = 0)
     {
         let i, ilen;
-        for (i = 0, ilen = this.impulseList.length; i < ilen; i++)
+        for (i = 0, ilen = this._impulseList.length; i < ilen; i++)
         {
-            this.impulseList[i].delayDelta += deltatime;
-            if (this.impulseList[i].impulse != 0 && this.impulseList[i].delayDelta >= this.impulseList[i].delay)
-                this.movingImpulse[this.impulseList[i].axis] += this.impulseList[i].impulse;
+            this._impulseList[i]._dt += deltatime;
+
+            if (this._impulseList[i].force != 0 && this._impulseList[i]._dt >= this._impulseList[i].delay)
+                this._movingImpulse[this._impulseList[i].axis] += this._impulseList[i].force;
         }
 
         return this;
     }
 
-    clearImpulses(deltatime = 0)
+    clearImpulses()
     {
-        let i;
-        for (i = 0; i < this.impulseList.length; i++)
-        {
-            this.impulseList[i].delta += deltatime;
-            if (this.impulseList[i].delta >= this.impulseList[i].time)
-                this.impulseList.splice(i, 1);
-        }
+        this._movingImpulse = {x:0, y:0};
 
+        let i;
+        for (i = 0; i < this._impulseList.length; i++)
+        {
+            if (this._impulseList[i]._dt >= this._impulseList[i].time)
+                this._impulseList.splice(i, 1);
+        }
         return this;
     }
 

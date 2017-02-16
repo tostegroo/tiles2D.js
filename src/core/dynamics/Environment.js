@@ -1,4 +1,5 @@
 import SETTINGS from '../settings';
+import { ENVIRONMENT_TYPE } from './dynamicConstants';
 /**
   * The Environment object is used for set the enviroment of part or all the Word
   *
@@ -18,6 +19,7 @@ export default class Environment
     {
         this._force = {x:0, y:0};
 
+        this.type = ENVIRONMENT_TYPE.air;
         this.density = density;
 		this.force = force;
     }
@@ -25,7 +27,7 @@ export default class Environment
     set force(value)
     {
         this._force = value;
-        
+
         this._force.x *= SETTINGS.ENVIRONMENT_MULTIPLY.x;
         this._force.y *= SETTINGS.ENVIRONMENT_MULTIPLY.y;
     }

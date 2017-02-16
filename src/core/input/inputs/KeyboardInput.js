@@ -1,7 +1,7 @@
 import { KEYBOARD } from '../InputConstants';
 
 /**
-  * The KeyboardInput object is used to manage the keyboard key press and release
+  * The KeyboardInput is used to manage the keyboard events
   *
   * @class
   * @memberof NGINT
@@ -17,25 +17,13 @@ export default class KeyboardInput
         document.body.addEventListener("keyup", this._onKeyUp.bind(this));
     }
 
-    normalize(key)
-    {
-        if(typeof(key)=='object' && key.length!=undefined)
-        {
-            for (let i = 0, len = key.length; i < len; i++)
-                key[i] = this._getValue(key[i]);
-        }
-        else
-            key = [this._getValue(key)];
-
-        return key;
-    }
-
     update(item)
     {
         let i, len;
-        for(i = 0, len = item.key.length; i < len ; i++)
+        for(i = 0, len = item.keyboard.length; i < len ; i++)
         {
-            let char = item.key[i];
+            let char = item.keyboard[i];
+
             if(this.key[char] && this.key[char].state && item.canHit)
             {
                 if (item.oneHit)
@@ -59,7 +47,20 @@ export default class KeyboardInput
         }
     }
 
-    _getValue(value)
+    static normalize(key)
+    {
+        if(typeof(key)=='object' && key.length!=undefined)
+        {
+            for (let i = 0, len = key.length; i < len; i++)
+                key[i] = KeyboardInput.getValue(key[i]);
+        }
+        else
+            key = [KeyboardInput.getValue(key)];
+
+        return key;
+    }
+
+    static getValue(value)
     {
         if(typeof(value)=='string')
             value = KEYBOARD[value.toUpperCase()];

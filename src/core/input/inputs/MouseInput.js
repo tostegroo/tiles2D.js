@@ -1,5 +1,5 @@
 /**
-  * The MouseInput object is used to manage the keyboard key press and release
+  * The MouseInput object is used to manage the mouse events
   *
   * @class
   * @memberof NGINT

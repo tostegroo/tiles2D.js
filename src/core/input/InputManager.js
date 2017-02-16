@@ -1,5 +1,7 @@
 import KeyboardInput from './inputs/KeyboardInput';
 import MouseInput from './inputs/MouseInput';
+import GamepadInput from './inputs/MouseInput';
+import TouchInput from './inputs/MouseInput';
 
 /**
   * The InputManager object is the base class of all input methods tha can be used
@@ -8,72 +10,68 @@ import MouseInput from './inputs/MouseInput';
   * @memberof NGINT
   * @author Fabio Toste
 */
+let inputLength = 0;
+let inputList = [];
+let keyboard = false;
+let mouse = false;
+let gamepads = false;
+let touch = false;
+
 export default class InputManager
 {
-    /**
-     */
-    constructor()
+    static addInput(name = "", inputs = {})
     {
-        this._loopID = false;
-        this._inputLength = 0;
-
-		this.inputList = [];
-
-        this.gamepads = [];
-        this.keyboard = new KeyboardInput();
-        this.mouse = new MouseInput();
-        //this.gamepads = new GamepadInput();
-        this.touch = null;
-
-        this.update();
-    }
-
-    addInput(name = "", input = {})
-    {
-        let index = this._getIndexByName(name);
+        let index = InputManager.getIndexByName(name);
         if(index==-1)
         {
-            input.name = name;
-            input.canHit = true;
+            inputs.name = name;
+            inputs.canHit = true;
 
-            if(input.hasOwnProperty('key'))
-                input.key = this.keyboard.normalize(input.key);
+            if(inputs.keyboard)
+            {
+                if(!keyboard)
+                    keyboard = new KeyboardInput();
 
-            this._inputLength = this.inputList.push(input);
+                inputs.keyboard = KeyboardInput.normalize(inputs.keyboard);
+            }
+
+            inputLength = inputList.push(inputs);
         }
         else
-            console.log("Input name ("+ input.name +") already exists");
+            console.log("Input name ("+ inputs.name +") already exists");
     }
 
-    removeInputByName(name)
+    static removeInputByName(name)
     {
-        let index = this._getIndexByName("name");
+        let index = InputManager.getIndexByName("name");
         if (index != -1)
             inputList.splice(index, 1);
     }
 
-    removeInputAt(index = -1)
+    static removeInputAt(index = -1)
     {
-        if (index != -1 && index > 0 && index < this._inputLength)
+        if (index != -1 && index > 0 && index < inputLength)
             inputList.splice(index, 1);
     }
 
-    update(deltatime = 0)
+    static update()
     {
-        var i, j, len, key, item;
-        for (i = 0; i < this._inputLength; i++)
+        var i, item;
+        for (i = 0; i < inputLength; i++)
         {
-            item = this.inputList[i];
-            this.keyboard.update(item);
+            item = inputList[i];
+
+            if(keyboard && item.keyboard)
+                keyboard.update(item);
         }
     }
 
-    _getIndexByName(name)
+    static getIndexByName(name)
     {
         let index = -1;
-        for (var i = 0; i < this._inputLength; i++)
+        for (var i = 0; i < inputLength; i++)
         {
-            if (this.inputList[i].name == name)
+            if (inputList[i].name == name)
             {
                 index = i;
                 break;

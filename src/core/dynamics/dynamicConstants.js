@@ -87,3 +87,18 @@ export const MATERIAL_DENSITY =
     iridium: 22420,
     osmium: 22570
 }
+
+/**
+ * Constants for environment types
+ *
+ * @static
+ * @constant
+ * @name AXIS
+ * @memberof NGINT
+ */
+export const ENVIRONMENT_TYPE =
+{
+    air: 0,
+    water: 1,
+    oil: 2
+}

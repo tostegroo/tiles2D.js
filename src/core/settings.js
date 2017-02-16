@@ -45,7 +45,7 @@ export default
      * @type {number}
      * @default 1 / 60
      */
-    TIME_STEP: 1 / 60,
+    TIME_STEP: 1 / 30,
 
     /**
      * The bounds to compute interactions and physics

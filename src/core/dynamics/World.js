@@ -102,12 +102,12 @@ export default class World
                 //Do the update
                 body.update(deltatime);
 
-                //Reset forces
-                body.resetForces();
+                //Clear forces
+                body.clearForces();
+                //Clear all finished impulses
+                body.clearImpulses();
                 //Update body bounds
                 body.updateBounds();
-                //Clear all finished impulses
-                body.clearImpulses(deltatime);
 
                 //Do everything that is needed after the update
                 body.endUpdate(deltatime);
@@ -136,8 +136,21 @@ export default class World
 
     _calculateCollisions(body, axis)
     {
-        body._position[axis] = (body._position[axis] > 800) ? 800 : body._position[axis];
-        body._position[axis] = (body._position[axis] < 0) ? 0 : body._position[axis];
+        let min = {x:0, y:0}
+        let max = {x:1920, y:800}
+
+        body._over[axis] = 0;
+        if(body._position[axis] < min[axis])
+        {
+            body._over[axis] = 1;
+            body._position[axis] = min[axis];
+        }
+
+        if(body._position[axis] > max[axis])
+        {
+            body._over[axis] = -1;
+            body._position[axis] = max[axis];
+        }
 
         body[axis] = body._position[axis];
     }
@@ -145,16 +158,26 @@ export default class World
     _calculateForces(body, axis, deltatime = 0)
     {
         let vdir = (body.velocity[axis] > 0) ? -1 : (body.velocity[axis] < 0) ? 1 : 0;
+        let i_axis = axis==AXIS.X ? AXIS.Y : AXIS.X;
         let tileFriction = 5.0;
         let bodyFriction = body.friction.bottom;
+
+        body._direction[axis] = body._position[axis] - body[axis];
 
         body._environmentForce[axis] = (body.mass * body._environment.force[axis]);
         body._dragForce[axis] = ((body._environment.density * body.dragCoefficient * body.area[axis]) / 2) * Math.pow(body.velocity[axis], 2) * vdir;
         body._buoyantForce[axis] = body.displacedVolume * body._environment.density * -body._environment.force[axis];
 
-        body._groundForce[axis] = -(bodyFriction * tileFriction) * body.velocity[axis];
+        if(body._over[i_axis]!=0)
+        {
+            //to do ground forces calculation
+            let tileFriction = 5.0;
+            let bodyFriction = body.friction.bottom;
 
-        body._netForce[axis] = body.movingForce[axis] + body.movingImpulse[axis] + body._environmentForce[axis] + body._dragForce[axis] + body._groundForce[axis] + body._buoyantForce[axis];
+            body._groundForce[axis] = -(bodyFriction * tileFriction) * body.velocity[axis];
+        }
+
+        body._netForce[axis] = body._movingForce[axis] + body._movingImpulse[axis] + body._environmentForce[axis] + body._dragForce[axis] + body._groundForce[axis] + body._buoyantForce[axis];
         body.acceleration[axis] = body._netForce[axis] / body.mass;
         body.velocity[axis] += deltatime * body.acceleration[axis];
         body._position[axis] += (deltatime * body.velocity[axis]) * SETTINGS.PIXEL_METER_UNIT;

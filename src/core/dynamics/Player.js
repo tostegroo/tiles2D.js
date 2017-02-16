@@ -1,6 +1,7 @@
 import Body from './Body';
 import { AXIS } from '../constants';
 import { DRAG_COEFFICIENT } from './dynamicConstants';
+import { ENVIRONMENT_TYPE } from './dynamicConstants';
 
 /**
   * The Player class can be used for a playable character
@@ -18,13 +19,14 @@ export default class Player extends Body
         this.crouched = false;
         this.move = false;
         this.run = false;
-        this.onWater = false;
+        this.onEnvironment = ENVIRONMENT_TYPE.air;
 
         this.movey = false;
 
         this.crouchScale = 0.6;
         this.walkForce = 800;
-        this.jumpImpulse = 6000;
+        this.jumpImpulse = 13000;
+
         this.runMultiply = 2;
         this.runJumpMultiply = 1;
         this.wallJumpImpulse = 120;
@@ -87,39 +89,23 @@ export default class Player extends Body
 
     jump()
     {
-        /*if (this.onWater==false)
+        switch(this.onEnvironment)
         {
-            if (onMaxX!=0)
-            {
-                if (onMaxY!=0)
-                {
-                    this.applyImpulse("y", jumpImpulse * -gravitySide, 0.1);
-                }else
-                {
-                    this.applyImpulse("x", -wallJumpImpulse * onMaxX, 0.1);
-                    this.applyImpulse("y", jumpImpulse * -gravitySide, 0.1);
-                }
-            }else
-            {
-                if (onMaxY!=0)
-                {
-                    var jumpForce:Number = (run == true) ? jumpImpulse * runJumpMultiply * -gravitySide: jumpImpulse * onMaxY;
-                    this.applyImpulse("y", jumpForce, 0.1);
-                }
-            }
-        }else
-        {
-            this.applyImpulse("y", jumpImpulse * -gravitySide, 0.05);
-        }*/
+            case ENVIRONMENT_TYPE.air:
 
-        console.log('jump');
+                if(this._over.y!=0)
+                    this.addImpulse(AXIS.Y, this.jumpImpulse * this._over.y, 0.1);
 
-        this.addImpulse(AXIS.Y, this.jumpImpulse * -1, 0.05);
+                break;
+            case ENVIRONMENT_TYPE.water:
+                this.applyImpulse(AXIS.Y, this.jumpImpulse * -1, 0.05);
+                break;
+        }
     }
 
     stopJump()
     {
-        this.applyForce(AXIS.Y, this.jumpImpulse * 1);
+        this.removeImpulses(AXIS.Y);
     }
 
     crouch()
