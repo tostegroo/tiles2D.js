@@ -124,6 +124,7 @@ export default class Player extends Body
     {
         this.run = true;
     }
+
     stopRun()
     {
         this.run = false;
@@ -131,8 +132,6 @@ export default class Player extends Body
 
     beginUpdate(deltatime)
     {
-        super.beginUpdate(deltatime);
-
         if (this.move)
         {
             let forceMultiply = (this.run) ? this.runMultiply : 1;
@@ -141,6 +140,8 @@ export default class Player extends Body
 
         //if (this.movey)
             //this.applyForce(AXIS.Y, this.walkForce * this.forceDirection.y);
+
+        super.beginUpdate(deltatime);
     }
 
     update(deltatime)

@@ -72,6 +72,8 @@ export default class Body
 
         this.dragCoefficient = 1.0;
 
+        this.static = false;
+
         //this.environmentForceDirection = {x:1, y:1};
         //Calculated physics properties
         /**
@@ -141,6 +143,9 @@ export default class Body
          * @member {array}
          */
         this._contactList = [];
+
+        this._next = null;
+        this._prev = null;
 
         this.sprite = sprite;
         this.updatePhysicalProperties();
@@ -407,7 +412,8 @@ export default class Body
 
     beginUpdate(deltatime = 0)
     {
-
+        //Apply all the impulses
+        this.applyImpulses(deltatime);
     }
 
     update(deltatime = 0)
@@ -418,6 +424,11 @@ export default class Body
 
     endUpdate(deltatime = 0)
     {
-
+        //Clear forces
+        this.clearForces();
+        //Clear all finished impulses
+        this.clearImpulses();
+        //Update body bounds
+        this.updateBounds();
     }
 }

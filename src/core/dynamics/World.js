@@ -13,12 +13,27 @@ import Environment from './Environment';
 export default class World
 {
     /**
+     *
+     * @param {NGINT.Environment} environment - The main environment of the world
+     *
      */
     constructor(environment = new Environment(MATERIAL_DENSITY.air, {x:0, y:9.81}))
     {
         this.mainEnvironment = environment;
+
         this.bodyList = [];
-		this.environmentList = [];
+        this.bodyCount = 0;
+
+        this.environmentList = [];
+        this.environmentCount = 0;
+
+        this._b = null;
+
+        this.contactList = [];
+        this.contactCount = 0;
+
+        this.jointList = [];
+        this.jointCount = 0;
 
         this.contactTile =
         {
@@ -31,58 +46,80 @@ export default class World
 
     addEnvironment(environment = false)
     {
-        if(environment)
-            this.environmentList.push(environment);
+        if(!environment)
+            return
+
+        this.environmentCount = this.environmentList.push(environment);
     }
 
     removeEnvironment(environment = false)
     {
-        if(environment)
+        if(!environment)
+            return
+
+        let index = this.environmentList.indexOf(environment);
+        if (index != -1)
         {
-            let index = this.environmentList.indexOf(environment);
-            if (index != -1)
-                this.environmentList.splice(index, 1);
+            environmentList.splice(index, 1);
+            this.environmentCount--;
         }
     }
 
     addBody(body = false)
     {
-        if(body)
-            this.bodyList.push(body);
+        if(!body)
+            return
+
+        body._prev = null;
+        body._next = this._b;
+        if(this._b!=null)
+            this._b._prev = body;
+
+        this._b = body;
+
+        this.bodyCount = this.bodyList.push(body);
     }
 
     removeBody(body = false)
     {
-        if(body)
+        if(!body)
+            return
+
+        let index = this.bodyList.indexOf(body);
+        if (index != -1)
         {
-            let index = this.bodyList.indexOf(body);
-            if(index != -1)
-                this.bodyList.splice(index, 1);
+            this.bodyList.splice(index, 1);
+            this.bodyCount--;
         }
+    }
+
+    beginUpdate(deltatime = 0)
+    {
+
     }
 
     update(deltatime = 0)
     {
         let t;
+        var body;
         let totalStep = Math.ceil(deltatime / SETTINGS.TIME_STEP);
         totalStep = (totalStep < 1) ? 1 : totalStep;
         deltatime = (deltatime > SETTINGS.TIME_STEP) ? SETTINGS.TIME_STEP : deltatime;
 
         for(t = 0; t < totalStep; t++)
         {
-            let b, e, elen, blen;
+            let b, e;
 
-            for (e = 0, elen = this.environmentList.length; e < elen; e++)
+            for (e = 0; e < this.environmentCount; e++)
                 this.environmentList[e].update(deltatime);
 
             //Body movement and projection loop
-            for (b = 0, blen = this.bodyList.length; b < blen; b++)
+            for (b = 0; b < this.bodyCount; b++)
             {
-                let body = this.bodyList[b];
+                body = this.bodyList[b];
 
                 body._environment = this.mainEnvironment;
-
-                for (e = 0, elen = this.environmentList.length; e < elen; e++)
+                for (e = 0; e < this.environmentCount; e++)
                 {
                     //to do, update body.environment;
                     this.environmentList[e].updateBodyInteration(body, deltatime);
@@ -90,29 +127,22 @@ export default class World
 
                 //Do everything that is needed before the update
                 body.beginUpdate(deltatime);
-                //Apply all the impulses
-                body.applyImpulses(deltatime);
 
                 //Projetcs the movement before calculations
                 this._updateForces(body, deltatime);
             }
 
             //Body collision loop
-            for (b = 0, blen = this.bodyList.length; b < blen; b++)
+            for (b = 0; b < this.bodyCount; b++)
             {
+                body = this.bodyList[b];
+
                 //Calculates all the collisions
-                this._calculateCollisions(body, AXIS.X);
-                this._calculateCollisions(body, AXIS.Y);
+                this._validateCollisions(body, AXIS.X);
+                this._validateCollisions(body, AXIS.Y);
 
                 //Do the update
                 body.update(deltatime);
-
-                //Clear forces
-                body.clearForces();
-                //Clear all finished impulses
-                body.clearImpulses();
-                //Update body bounds
-                body.updateBounds();
 
                 //Do everything that is needed after the update
                 body.endUpdate(deltatime);
@@ -120,6 +150,11 @@ export default class World
 
             this._time += deltatime;
         }
+    }
+
+    endUpdate(deltatime = 0)
+    {
+
     }
 
     _updateForces(body, deltatime = 0)
@@ -160,7 +195,7 @@ export default class World
         body._position[axis] += (deltatime * body.velocity[axis]) * SETTINGS.PIXEL_METER_UNIT;
     }
 
-    _calculateCollisions(body, axis)
+    _validateCollisions(body, axis)
     {
         let min = {x:50, y:100}
         let max = {x:1800, y:800}
