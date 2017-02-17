@@ -20,17 +20,16 @@ export default class Body
     constructor(sprite)
     {
         /**
-         * The id of the body object, can be used for identify the instance
+         * The id of the body object, can be used for identify the instance or for indexing
          *
          * @private
          * @member {number}
          */
-        this.id = 0;
+        this._id = 0;
 
         /**
          * The name of the body object, can be used for identify the instance
          *
-         * @private
          * @member {string}
          */
         this.name = "";
@@ -38,7 +37,6 @@ export default class Body
         /**
          * The type of the body object, can be used for identify the instance
          *
-         * @private
          * @member {string}
          */
         this.type = "";
@@ -103,6 +101,7 @@ export default class Body
         //variables for calculation
         this._environment = false;
         this._displacedVolume = 0;
+        this._bounds = {left:0, right:0, top:0, bottom:0};
         this._restitution = {x:0, y:0};
         this._position = {x:0, y:0};
         this._direction = {x:0, y:0};
@@ -126,6 +125,11 @@ export default class Body
         {
             x: 0,
             y: 0
+        }
+        this._limits =
+        {
+            x: {min: 0, max: 0},
+            y: {min: 0, max: 0}
         }
 
         /**
@@ -318,6 +322,17 @@ export default class Body
     get area()
     {
         return this._area;
+    }
+
+    _updateBounds()
+    {
+        this._bounds =
+        {
+            top: this._position.y - this.height,
+            bottom: this._position.y,
+            left: this._position.x,
+            right: this._position.x + this.width,
+        }
     }
 
     updateBounds()

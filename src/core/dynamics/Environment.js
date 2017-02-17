@@ -17,9 +17,30 @@ export default class Environment
      */
     constructor(density = 1, force = {x:0, y:0})
     {
+        /**
+         * The id of the environment object, can be used for identify the instance or for indexing
+         *
+         * @private
+         * @member {number}
+         */
+        this._id = 0;
+
+        /**
+         * The name of the body object, can be used for identify the instance
+         *
+         * @member {string}
+         */
+        this.name = "";
+
+        /**
+         * The type of the body object, can be used for identify the instance
+         *
+         * @member {string}
+         */
+        this.type = ENVIRONMENT_TYPE.air;
+
         this._force = {x:0, y:0};
 
-        this.type = ENVIRONMENT_TYPE.air;
         this.density = density;
 		this.force = force;
     }

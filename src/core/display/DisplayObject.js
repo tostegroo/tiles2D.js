@@ -19,17 +19,16 @@ export default class DisplayObject
     constructor()
     {
         /**
-         * The id of the body object, can be used for identify the instance
+         * The id of the body object, can be used for identify the instance or for indexing
          *
          * @private
          * @member {number}
          */
-        this.id = 0;
+        this._id = 0;
 
         /**
          * The name of the body object, can be used for identify the instance
          *
-         * @private
          * @member {string}
          */
         this.name = "";
@@ -37,7 +36,6 @@ export default class DisplayObject
         /**
          * The type of the body object, can be used for identify the instance
          *
-         * @private
          * @member {string}
          */
         this.type = "";
@@ -163,7 +161,7 @@ export default class DisplayObject
         else
             this.localPosition();
     }
-    
+
     hitTestObject(displayObject = null)
     {
 

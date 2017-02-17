@@ -3,6 +3,8 @@ import { AXIS } from '../constants';
 import { MATERIAL_DENSITY } from './dynamicConstants';
 import Environment from './Environment';
 
+import ScreenConsole from '../../debug/ScreenConsole'
+
 /**
   * The World object is the main object of NGINT, is used to calculate all interactions and physics
   *
@@ -49,6 +51,7 @@ export default class World
         if(!environment)
             return
 
+        environment._id = this.environmentCount;
         this.environmentCount = this.environmentList.push(environment);
     }
 
@@ -57,8 +60,8 @@ export default class World
         if(!environment)
             return
 
-        let index = this.environmentList.indexOf(environment);
-        if (index != -1)
+        let index = environment._id;
+        if (index>0 && index<this.environmentCount)
         {
             environmentList.splice(index, 1);
             this.environmentCount--;
@@ -77,6 +80,7 @@ export default class World
 
         this._b = body;
 
+        body._id = this.bodyCount;
         this.bodyCount = this.bodyList.push(body);
     }
 
@@ -85,8 +89,8 @@ export default class World
         if(!body)
             return
 
-        let index = this.bodyList.indexOf(body);
-        if (index != -1)
+        let index = body._id;
+        if (index>0 && index<this.bodyCount)
         {
             this.bodyList.splice(index, 1);
             this.bodyCount--;
@@ -108,7 +112,7 @@ export default class World
 
         for(t = 0; t < totalStep; t++)
         {
-            let b, e;
+            let b, e, c, o, clen;
 
             for (e = 0; e < this.environmentCount; e++)
                 this.environmentList[e].update(deltatime);
@@ -117,6 +121,7 @@ export default class World
             for (b = 0; b < this.bodyCount; b++)
             {
                 body = this.bodyList[b];
+                body._limits = {x: {min: 50, max: 1800}, y: {min: 100, max: 800}};
 
                 body._environment = this.mainEnvironment;
                 for (e = 0; e < this.environmentCount; e++)
@@ -125,17 +130,38 @@ export default class World
                     this.environmentList[e].updateBodyInteration(body, deltatime);
                 }
 
+                //to do
+                //loop through the body's contact list
+                /*for (c = 0, clen = body._contactList; c < clen; c++)
+                {
+
+                }*/
+
                 //Do everything that is needed before the update
                 body.beginUpdate(deltatime);
 
                 //Projetcs the movement before calculations
                 this._updateForces(body, deltatime);
+
+                //Update body bounds
+                body._updateBounds();
             }
 
             //Body collision loop
             for (b = 0; b < this.bodyCount; b++)
             {
                 body = this.bodyList[b];
+
+                //loop through all other bodies
+                if(b==0)
+                {
+                    for (o = 0; o < this.bodyCount; o++)
+                    {
+                        let ob = this.bodyList[o];
+                        if(b!=o)
+                            this._isOverlapping(body, ob);
+                    }
+                }
 
                 //Calculates all the collisions
                 this._validateCollisions(body, AXIS.X);
@@ -155,6 +181,72 @@ export default class World
     endUpdate(deltatime = 0)
     {
 
+    }
+
+    _isOverlapping(b1, b2)
+    {
+        let a, b, ab, bb
+
+        let overlapX = b1._bounds.left < b2._bounds.right && b1._bounds.right > b2._bounds.left;
+        let overlapY = b1._bounds.top < b2._bounds.bottom && b1._bounds.bottom > b2._bounds.top;
+
+        if(overlapY)
+        {
+            if(b1.velocity.x > 0)
+            {
+                ab = b1.right;
+                a = b1._bounds.right;
+                bb = b2.left;
+                b = b2._bounds.left;
+
+                if(overlapX && a>b)
+                {
+                    b1._limits.x.max = b - b1.width;
+                }
+            }
+            else if(b1.velocity.x < 0)
+            {
+                ab = b1.left;
+                a = b1._bounds.left;
+                bb = b2.right;
+                b = b2._bounds.right;
+
+                if(overlapX && a<b)
+                {
+                    b1._limits.x.min = b;
+                }
+            }
+
+            ScreenConsole.log(b2._bounds.left, b2._bounds.right, b1.velocity.x, "a:"+a, "ab:"+ab, "b:"+b, "bb:"+bb, "posX:"+b1._limits.x.max)
+        }
+
+        if(overlapX)
+        {
+            if(b1.velocity.y > 0)
+            {
+                ab = b1.bottom;
+                a = b1._bounds.bottom;
+                bb = b2.top;
+                b = b2._bounds.top;
+
+                if(overlapY && a>b)
+                {
+                    //b1._limits.y.max = b;
+                }
+            }
+            else if(b1.velocity.y < 0)
+            {
+                ab = b1.top;
+                a = b1._bounds.top;
+                bb = b2.bottom;
+                b = b2._bounds.bottom;
+
+                if(overlapY && a<b)
+                {
+                    //b1._limits.x.min = b + b1.height;
+                }
+            }
+        }
     }
 
     _updateForces(body, deltatime = 0)
@@ -197,28 +289,25 @@ export default class World
 
     _validateCollisions(body, axis)
     {
-        let min = {x:50, y:100}
-        let max = {x:1800, y:800}
         let collider_bounciness = 0;
-
-        body._direction[axis] = body._position[axis] - body[axis];
         let vdir = (body._direction[axis] > 0) ? -1 : (body._direction[axis] < 0) ? 1 : 0;
 
+        body._direction[axis] = body._position[axis] - body[axis];
         body._impulseDirection[axis] = 0;
 
-        if(body._position[axis] < min[axis])
+        if(body._position[axis] < body._limits[axis].min)
         {
             body._impulseDirection[axis] = 1;
-            body._position[axis] = min[axis];
+            body._position[axis] = body._limits[axis].min;
 
             body._restitution[axis] = (collider_bounciness + body._bounciness[axis]['1']) / 2;
             body.velocity[axis] *= body._restitution[axis] * -vdir;
         }
 
-        if(body._position[axis] > max[axis])
+        if(body._position[axis] > body._limits[axis].max)
         {
             body._impulseDirection[axis] = -1;
-            body._position[axis] = max[axis];
+            body._position[axis] =body._limits[axis].max;
 
             body._restitution[axis] = (collider_bounciness + body._bounciness[axis]['-1']) / 2;
             body.velocity[axis] *= body._restitution[axis] * vdir;

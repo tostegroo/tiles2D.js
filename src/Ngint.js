@@ -7,6 +7,7 @@ import { KEYBOARD } from './core/input/InputConstants';
 import Player from './core/dynamics/Player';
 import World from './core/dynamics/World';
 import Environment from './core/dynamics/Environment';
+import ScreenConsole from './debug/ScreenConsole'
 
 
 //change to import from file
@@ -56,6 +57,8 @@ export class Ngint
         document.body.appendChild(domSprite2.domElement);
 
         console.log("Ngint created");
+
+        ScreenConsole.add(0, 0, 300, 150);
 
         this.update();
     }
