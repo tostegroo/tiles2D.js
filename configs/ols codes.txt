@@ -1,0 +1,37 @@
+if(overlap.overlap.x && overlap.overlap.y)
+{
+    //x axis
+    b1_new_velocity.x = b1.velocity.x//b1_length * Math.cos(b1_angle - overlap.angle);
+    b1_final_velocity.x = ((b1.mass - b2.mass) * b1_new_velocity.x + (2 * b2.mass) * b2_new_velocity.x) / (b1.mass + b2.mass);
+
+    b2_new_velocity.x = b2.velocity.x//b2_length * Math.cos(b2_angle - overlap.angle);
+    b2_final_velocity.x = ((2 * b1.mass) * b1_new_velocity.x + (b2.mass - b1.mass) * b2_new_velocity.x) / (b1.mass + b2.mass);
+
+    //y axis
+    b1_new_velocity.y = b1.velocity.y//b1_length * Math.sin(b1_angle - overlap.angle);
+    b1_final_velocity.y = ((b1.mass - b2.mass) * b1_new_velocity.y + (2 * b2.mass) * b2_new_velocity.y) / (b1.mass + b2.mass);
+
+    b2_new_velocity.y = b2.velocity.y//b2_length * Math.sin(b2_angle - overlap.angle);
+    b2_final_velocity.y = ((2 * b1.mass) * b1_new_velocity.y + (b2.mass - b1.mass) * b2_new_velocity.y) / (b1.mass + b2.mass);
+
+    b1.velocity.x = b1_final_velocity.x//Math.cos(overlap.angle) * b1_final_velocity.x + Math.cos(overlap.angle + pi2) * b1_final_velocity.y;
+    b2.velocity.x = b2_final_velocity.x//Math.cos(overlap.angle) * b2_final_velocity.x + Math.cos(overlap.angle + pi2) * b2_final_velocity.y;
+
+    b1.velocity.y = b1_final_velocity.y//Math.sin(overlap.angle) * b1_final_velocity.x + Math.sin(overlap.angle + pi2) * b1_final_velocity.y;
+    b2.velocity.y = b2_final_velocity.y//Math.sin(overlap.angle) * b2_final_velocity.x + Math.sin(overlap.angle + pi2) * b2_final_velocity.y;
+}
+
+if(overlap.value.y > overlap.value.x)
+{
+    b1._impulseDirection.y = overlap.direction.x;
+    //b1.velocity.x = Math.cos(overlap.angle) * b1_final_velocity.x + Math.cos(overlap.angle + pi2) * b1_final_velocity.y;
+    //b1.velocity.x *= overlap.area.y;
+
+    b2._impulseDirection.y = -overlap.direction.x;
+    //b2.velocity.x = Math.cos(overlap.angle) * b2_final_velocity.x + Math.cos(overlap.angle + pi2) * b2_final_velocity.y;
+    //b2.velocity.x *= overlap.area.y;
+
+    b1._position.x += overlap.value.x * overlap.direction.x;
+
+    using = 'x';
+}

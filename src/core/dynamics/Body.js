@@ -92,20 +92,21 @@ export default class Body
             initial: {width: 1, height: 1, depth: 1}
         }
         this._friction = {x: {'1':0, '-1':0}, y: {'1':0, '-1':0}};
+        this._contactfriction = {x: {'1':0, '-1':0}, y: {'1':0, '-1':0}};
         this._bounciness = {x: {'1':0, '-1':0}, y: {'1':0, '-1':0}};
 
         //physics properties
-        this.velocity = {x:0, y:0};
+        this.velocity = new Vector2(0, 0);
         this.acceleration = {x:0, y:0};
 
         //variables for calculation
         this._environment = false;
         this._displacedVolume = 0;
         this._bounds = {left:0, right:0, top:0, bottom:0};
+        this._center = {x:0, y: 0};
         this._restitution = {x:0, y:0};
         this._position = {x:0, y:0};
         this._direction = {x:0, y:0};
-        this._lastPosition = {x:0, y:0};
         this._currentTile = {x:0, y:0};
         this._environmentForce = {x:0, y:0};
         this._netForce = {x:0, y:0};
@@ -126,11 +127,6 @@ export default class Body
             x: 0,
             y: 0
         }
-        this._limits =
-        {
-            x: {min: 0, max: 0},
-            y: {min: 0, max: 0}
-        }
 
         /**
          * The array list of impulses to appply to this body
@@ -147,9 +143,6 @@ export default class Body
          * @member {array}
          */
         this._contactList = [];
-
-        this._next = null;
-        this._prev = null;
 
         this.sprite = sprite;
         this.updatePhysicalProperties();
@@ -300,11 +293,11 @@ export default class Body
         return this._volume;
     }
 
-    set density(value)
+    /*set density(value)
     {
         this._density = value;
         this._mass = this._volume * this._density;
-    }
+    }*/
 
     get density()
     {
@@ -333,6 +326,7 @@ export default class Body
             left: this._position.x,
             right: this._position.x + this.width,
         }
+        this._center = {x: this._position.x + (this.width / 2), y: this._position.y - (this.height / 2)};
     }
 
     updateBounds()
@@ -350,6 +344,31 @@ export default class Body
             bottom: {min: this.left + (this.width * this.frictionLimits.bottom.min), max: this.left + (this.width * this.frictionLimits.bottom.max)},
         }
         return this;
+    }
+
+    overlaps(body)
+    {
+        let overlaps_x = this._bounds.left < body._bounds.right && this._bounds.right > body._bounds.left;
+        let overlaps_y = this._bounds.top < body._bounds.bottom && this._bounds.bottom > body._bounds.top;
+
+        let value_x = (overlaps_y) ? Math.max(0, Math.min(this._bounds.right, body._bounds.right) - Math.max(this._bounds.left, body._bounds.left)) : 0;
+        let value_y = (overlaps_x) ? Math.max(0, Math.min(this._bounds.bottom, body._bounds.bottom) - Math.max(this._bounds.top, body._bounds.top)) : 0;
+
+        let dx = this._center.x - body._center.x;
+        let direction_x = (dx > 0) ? 1 : -1;
+
+        let dy = this._center.y - body._center.y;
+        let direction_y = (dy > 0) ? 1 : -1;
+
+        let angle = Math.atan2(dy, dx);
+
+        return {
+            overlap: {x: overlaps_x, y: overlaps_y},
+            area: {x: value_x / this.width, y: value_y / this.height},
+            value: {x: value_x, y: value_y},
+            angle: angle,
+            direction: {x: direction_x, y: direction_y}
+        };
     }
 
     updatePhysicalProperties()
@@ -427,6 +446,10 @@ export default class Body
 
     beginUpdate(deltatime = 0)
     {
+        //Reset all the impulse directions
+        this._impulseDirection.x = 0;
+        this._impulseDirection.y = 0;
+
         //Apply all the impulses
         this.applyImpulses(deltatime);
     }

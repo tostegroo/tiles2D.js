@@ -25,6 +25,13 @@ export default class DomSprite extends DisplayObject
         this.domElement = document.createElement("DIV");
         this.domElement.style.position = 'Absolute';
 
+        let transformOrigin = '50% 50%';
+        this.domElement.style.webkitTransformOrigin = transformOrigin;
+        this.domElement.style.MozTransformOrigin = transformOrigin;
+        this.domElement.style.msTransformOrigin = transformOrigin;
+        this.domElement.style.OTransformOrigin = transformOrigin;
+        this.domElement.style.transformOrigin = transformOrigin;
+
         this.x = x;
         this.y = y;
 
@@ -43,8 +50,15 @@ export default class DomSprite extends DisplayObject
     {
         super.x = value;
 
+        let transform = 'translate3d('+value+'px, '+super.y+'px, 0px)';
         if(this.domElement)
-            this.domElement.style.left = value + 'px';
+        {
+            this.domElement.style.webkitTransformOrigin = transform;
+            this.domElement.style.MozTransform = transform;
+            this.domElement.style.msTransform = transform;
+            this.domElement.style.OTransform = transform;
+            this.domElement.style.transform = transform;
+        }
     }
 
     get x()
@@ -56,8 +70,15 @@ export default class DomSprite extends DisplayObject
     {
         super.y = value;
 
+        let transform = 'translate3d('+super.x+'px, '+(value-this.height)+'px, 0px)';
         if(this.domElement)
-            this.domElement.style.top = (value - this._height) + 'px';
+        {
+            this.domElement.style.webkitTransform = transform;
+            this.domElement.style.MozTransform = transform;
+            this.domElement.style.msTransform = transform;
+            this.domElement.style.OTransform = transform;
+            this.domElement.style.transform = transform;
+        }
     }
 
     get y()

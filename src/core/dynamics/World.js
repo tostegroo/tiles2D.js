@@ -29,8 +29,6 @@ export default class World
         this.environmentList = [];
         this.environmentCount = 0;
 
-        this._b = null;
-
         this.contactList = [];
         this.contactCount = 0;
 
@@ -42,6 +40,11 @@ export default class World
             X: {x: 0, y:0},
             Y: {x: 0, y:0}
         };
+        this._limits =
+        {
+            x: {min: 50, max: 1800},
+            y: {min: 100, max: 800}
+        }
 
         this._time = 0;
     }
@@ -72,13 +75,6 @@ export default class World
     {
         if(!body)
             return
-
-        body._prev = null;
-        body._next = this._b;
-        if(this._b!=null)
-            this._b._prev = body;
-
-        this._b = body;
 
         body._id = this.bodyCount;
         this.bodyCount = this.bodyList.push(body);
@@ -121,7 +117,6 @@ export default class World
             for (b = 0; b < this.bodyCount; b++)
             {
                 body = this.bodyList[b];
-                body._limits = {x: {min: 50, max: 1800}, y: {min: 100, max: 800}};
 
                 body._environment = this.mainEnvironment;
                 for (e = 0; e < this.environmentCount; e++)
@@ -129,13 +124,6 @@ export default class World
                     //to do, update body.environment;
                     this.environmentList[e].updateBodyInteration(body, deltatime);
                 }
-
-                //to do
-                //loop through the body's contact list
-                /*for (c = 0, clen = body._contactList; c < clen; c++)
-                {
-
-                }*/
 
                 //Do everything that is needed before the update
                 body.beginUpdate(deltatime);
@@ -155,19 +143,18 @@ export default class World
                 //loop through all other bodies
                 if(b==0)
                 {
-                    for (o = 0; o < this.bodyCount; o++)
+                    for (o = b + 1; o < this.bodyCount; o++)
                     {
-                        let ob = this.bodyList[o];
-                        if(b!=o)
-                            this._isOverlapping(body, ob);
+                        let body2 = this.bodyList[o];
+                        this._isOverlapping(body, body2);
                     }
                 }
 
-                //Calculates all the collisions
+                //Validates all the collisions
                 this._validateCollisions(body, AXIS.X);
                 this._validateCollisions(body, AXIS.Y);
 
-                //Do the update
+                //Do the update of the body
                 body.update(deltatime);
 
                 //Do everything that is needed after the update
@@ -185,159 +172,137 @@ export default class World
 
     _isOverlapping(b1, b2)
     {
-        let a, b, ab, bb
+        let pi2 = Math.PI/2;
+        let b1_new_velocity = {x: 0, y: 0},
+            b2_new_velocity = {x: 0, y: 0};
 
-        let overlapX = b1._bounds.left < b2._bounds.right && b1._bounds.right > b2._bounds.left;
-        let overlapY = b1._bounds.top < b2._bounds.bottom && b1._bounds.bottom > b2._bounds.top;
+        let overlap = b1.overlaps(b2);
 
-        if(overlapY)
+        if(overlap.overlap.x && overlap.overlap.y)
         {
-            if(b1.velocity.x > 0)
-            {
-                ab = b1.right;
-                a = b1._bounds.right;
-                bb = b2.left;
-                b = b2._bounds.left;
+            b1_new_velocity.x = ((b1.mass - b2.mass) * b1.velocity.x + (2 * b2.mass) * b2.velocity.x) / (b1.mass + b2.mass);
+            b2_new_velocity.x = ((2 * b1.mass) * b1.velocity.x + (b2.mass - b1.mass) * b2.velocity.x) / (b1.mass + b2.mass);
 
-                if(overlapX && a>b)
-                {
-                    b1._limits.x.max = b - b1.width;
-                }
-            }
-            else if(b1.velocity.x < 0)
-            {
-                ab = b1.left;
-                a = b1._bounds.left;
-                bb = b2.right;
-                b = b2._bounds.right;
+            b1_new_velocity.y = ((b1.mass - b2.mass) * b1.velocity.y + (2 * b2.mass) * b2.velocity.y) / (b1.mass + b2.mass);
+            b2_new_velocity.y = ((2 * b1.mass) * b1.velocity.y + (b2.mass - b1.mass) * b2.velocity.y) / (b1.mass + b2.mass);
 
-                if(overlapX && a<b)
-                {
-                    b1._limits.x.min = b;
-                }
-            }
+            b1.velocity.x = b1_new_velocity.x;
+            b2.velocity.x = b2_new_velocity.x;
 
-            ScreenConsole.log(b2._bounds.left, b2._bounds.right, b1.velocity.x, "a:"+a, "ab:"+ab, "b:"+b, "bb:"+bb, "posX:"+b1._limits.x.max)
+            b1.velocity.y = b1_new_velocity.y;
+            b2.velocity.y = b2_new_velocity.y;
         }
 
-        if(overlapX)
+        if(overlap.value.y > overlap.value.x)
         {
-            if(b1.velocity.y > 0)
-            {
-                ab = b1.bottom;
-                a = b1._bounds.bottom;
-                bb = b2.top;
-                b = b2._bounds.top;
-
-                if(overlapY && a>b)
-                {
-                    //b1._limits.y.max = b;
-                }
-            }
-            else if(b1.velocity.y < 0)
-            {
-                ab = b1.top;
-                a = b1._bounds.top;
-                bb = b2.bottom;
-                b = b2._bounds.bottom;
-
-                if(overlapY && a<b)
-                {
-                    //b1._limits.x.min = b + b1.height;
-                }
-            }
+            b1._impulseDirection.y = overlap.direction.x;
+            b2._impulseDirection.y = -overlap.direction.x;
+            b1._position.x += overlap.value.x * overlap.direction.x;
         }
+
+        if(overlap.value.x > overlap.value.y)
+        {
+            b1._impulseDirection.x = overlap.direction.y;
+            b2._impulseDirection.x = -overlap.direction.y;
+            b1._position.y += overlap.value.y * overlap.direction.y;
+        }
+
+        ScreenConsole.log(
+            "cos: "+Math.cos(overlap.angle),
+            "sin: "+Math.sin(overlap.angle)
+        );
     }
 
-    _updateForces(body, deltatime = 0)
+    _updateForces(b, deltatime = 0)
     {
-        body._position = {x: body.x, y: body.y};
+        b._position = {x: b.x, y: b.y};
 
-        body._currentTile.x = Math.floor(body.left / SETTINGS.TILE_SIZE);
-        body._currentTile.y = Math.floor(body.top / SETTINGS.TILE_SIZE);
+        b._currentTile.x = Math.floor(b.left / SETTINGS.TILE_SIZE);
+        b._currentTile.y = Math.floor(b.top / SETTINGS.TILE_SIZE);
 
-        this._upadteContactTiles(body);
+        //this._upadteContactTiles(b);
 
-        body._lastPosition = {x: body._position.x, y: body._position.y};
-
-        this._calculateForces(body, AXIS.X, deltatime);
-        this._calculateForces(body, AXIS.Y, deltatime);
+        this._calculateForces(b, AXIS.X, deltatime);
+        this._calculateForces(b, AXIS.Y, deltatime);
     }
 
-    _calculateForces(body, axis, deltatime = 0)
+    _calculateForces(b, a, deltatime = 0)
     {
-        let vdir = (body.velocity[axis] > 0) ? -1 : (body.velocity[axis] < 0) ? 1 : 0;
-        let i_axis = axis==AXIS.X ? AXIS.Y : AXIS.X;
+        let vdir = (b.velocity[a] > 0) ? -1 : (b.velocity[a] < 0) ? 1 : 0;
+        let ia = a==AXIS.X ? AXIS.Y : AXIS.X;
+        let idir =
 
-        body._frictionalForce[axis] = 0;
-        if(body._impulseDirection[i_axis]!=0)
+        b._frictionalForce[a] = 0;
+        if(b._impulseDirection[ia]!=0)
         {
-            //to do friction calculation (cbody friction * body friction);
-            let friction_coefficient = 0.3 * body._friction[i_axis][body._impulseDirection[i_axis]];
-            body._frictionalForce[axis] = friction_coefficient * body._netForce[i_axis] * -body.velocity[axis] * -body._impulseDirection[i_axis];
+            //to do friction calculation (cb friction * b friction);
+            let friction_coefficient = b._contactfriction[ia][b._impulseDirection[ia]] * b._friction[ia][b._impulseDirection[ia]];
+            friction_coefficient += b._contactfriction[ia][b._impulseDirection[a]] * b._friction[ia][b._impulseDirection[a]];
+
+            b._frictionalForce[a] = 0;//friction_coefficient * b._netForce[ia] * -b.velocity[a] * -b._impulseDirection[ia];
         }
 
-        body._environmentForce[axis] = (body.mass * body._environment.force[axis]);
-        body._dragForce[axis] = ((body._environment.density * body.dragCoefficient * body.area[axis]) / 2) * Math.pow(body.velocity[axis], 2) * vdir;
-        body._buoyantForce[axis] = body._displacedVolume * body._environment.density * -body._environment.force[axis];
-        body._netForce[axis] = body._movingForce[axis] + body._movingImpulse[axis] + body._environmentForce[axis] + body._dragForce[axis] + body._frictionalForce[axis] + body._buoyantForce[axis];
+        b._environmentForce[a] = (b.mass * b._environment.force[a]);
+        b._dragForce[a] = ((b._environment.density * b.dragCoefficient * b.area[a]) / 2) * Math.pow(b.velocity[a], 2) * vdir;
+        b._buoyantForce[a] = b._displacedVolume * b._environment.density * -b._environment.force[a];
+        b._netForce[a] = b._movingForce[a] + b._movingImpulse[a] + b._environmentForce[a] + b._dragForce[a] + b._frictionalForce[a] + b._buoyantForce[a];
 
-        body.acceleration[axis] = body._netForce[axis] / body.mass;
-        body.velocity[axis] += deltatime * body.acceleration[axis];
-        body._position[axis] += (deltatime * body.velocity[axis]) * SETTINGS.PIXEL_METER_UNIT;
+        b.acceleration[a] = b._netForce[a] / b.mass;
+        b.velocity[a] += deltatime * b.acceleration[a];
+        b._position[a] += (deltatime * b.velocity[a]) * SETTINGS.PIXEL_METER_UNIT;
+        b._direction[a] = ((b._position[a] - b[a]) > 0) ? -1 : ((b._position[a] - b[a]) < 0) ? 1 : 0;
     }
 
-    _validateCollisions(body, axis)
+    //keepInBounds
+    _validateCollisions(b, a)
     {
         let collider_bounciness = 0;
-        let vdir = (body._direction[axis] > 0) ? -1 : (body._direction[axis] < 0) ? 1 : 0;
 
-        body._direction[axis] = body._position[axis] - body[axis];
-        body._impulseDirection[axis] = 0;
-
-        if(body._position[axis] < body._limits[axis].min)
+        if(b._position[a] <= this._limits[a].min)
         {
-            body._impulseDirection[axis] = 1;
-            body._position[axis] = body._limits[axis].min;
+            b._impulseDirection[a] = 1;
+            b._position[a] = this._limits[a].min;
+            b.velocity[a] = 0;
 
-            body._restitution[axis] = (collider_bounciness + body._bounciness[axis]['1']) / 2;
-            body.velocity[axis] *= body._restitution[axis] * -vdir;
+            //b._restitution[a] = (collider_bounciness + b._bounciness[a]['1']) / 2;
+            //b.velocity[a] *= b._restitution[a] * -b._direction[a];
         }
 
-        if(body._position[axis] > body._limits[axis].max)
+        if(b._position[a] >= this._limits[a].max)
         {
-            body._impulseDirection[axis] = -1;
-            body._position[axis] =body._limits[axis].max;
+            b._impulseDirection[a] = -1;
+            b._position[a] = this._limits[a].max;
+            b.velocity[a] = 0;
 
-            body._restitution[axis] = (collider_bounciness + body._bounciness[axis]['-1']) / 2;
-            body.velocity[axis] *= body._restitution[axis] * vdir;
+            //b._restitution[a] = (collider_bounciness + b._bounciness[a]['-1']) / 2;
+            //b.velocity[a] *= b._restitution[a] * b._direction[a];
         }
 
-        body[axis] = body._position[axis];
+        b[a] = b._position[a];
     }
 
-    _upadteContactTiles(body)
+    _upadteContactTiles(b)
     {
-        if(body._direction.x <= 0)
+        if(b._direction.x <= 0)
         {
-            this.contactTile.X.x = Math.floor(body.frictionArea.left / SETTINGS.TILE_SIZE);
-            this.contactTile.Y.x = Math.floor((body.left - 0.1) / SETTINGS.TILE_SIZE);
+            this.contactTile.X.x = Math.floor(b.frictionArea.left / SETTINGS.TILE_SIZE);
+            this.contactTile.Y.x = Math.floor((b.left - 0.1) / SETTINGS.TILE_SIZE);
         }
         else
         {
-            this.contactTile.X.x = Math.floor(body.frictionArea.right / SETTINGS.TILE_SIZE);
-            this.contactTile.Y.x = Math.floor((body.right + 0.1) / SETTINGS.TILE_SIZE);
+            this.contactTile.X.x = Math.floor(b.frictionArea.right / SETTINGS.TILE_SIZE);
+            this.contactTile.Y.x = Math.floor((b.right + 0.1) / SETTINGS.TILE_SIZE);
         }
 
-        if(body._direction.y <= 0)
+        if(b._direction.y <= 0)
         {
-            this.contactTile.Y.y = Math.floor(body.frictionArea.top / SETTINGS.TILE_SIZE);
-            this.contactTile.X.y = Math.floor((body.top - 0.1) / SETTINGS.TILE_SIZE);
+            this.contactTile.Y.y = Math.floor(b.frictionArea.top / SETTINGS.TILE_SIZE);
+            this.contactTile.X.y = Math.floor((b.top - 0.1) / SETTINGS.TILE_SIZE);
         }
         else
         {
-            this.contactTile.Y.y = Math.floor(body.frictionArea.bottom / SETTINGS.TILE_SIZE);
-            this.contactTile.X.y = Math.floor((body.bottom + 0.1) / SETTINGS.TILE_SIZE);
+            this.contactTile.Y.y = Math.floor(b.frictionArea.bottom / SETTINGS.TILE_SIZE);
+            this.contactTile.X.y = Math.floor((b.bottom + 0.1) / SETTINGS.TILE_SIZE);
         }
     }
 }

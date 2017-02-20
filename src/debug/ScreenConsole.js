@@ -5,7 +5,7 @@
   * @memberof NGINT
   * @author Fabio Toste
 */
-let screenElement = null
+let screenLogElement = null
 
 export default class ScreenConsole
 {
@@ -17,20 +17,27 @@ export default class ScreenConsole
      * @param [height=10] height - The height of the console screen
      *
      */
-    static add(left = 0, top = 0, width = 200, height = 150)
+    static add(left = 0, top = 0, width = 200, height = 150, opacity = 0.9)
     {
-        screenElement = document.createElement("DIV");
-        screenElement.style.position = 'Absolute';
-        screenElement.style.left = left + 'px';
-        screenElement.style.top = top + 'px';
-        screenElement.style.width = width + 'px';
-        screenElement.style.height = height + 'px';
-        screenElement.style.border = '1px solid #000';
-        screenElement.style.backgroundColor = '#fff';
-        screenElement.style.padding = '10px';
-        screenElement.style['z-index'] = 9999;
+        screenLogElement = document.createElement("DIV");
+        screenLogElement.style.position = 'Absolute';
+        screenLogElement.style.left = left + 'px';
+        screenLogElement.style.top = top + 'px';
+        screenLogElement.style.width = width + 'px';
+        screenLogElement.style.height = height + 'px';
+        screenLogElement.style.border = '1px solid #323232';
+        screenLogElement.style.color = '#f2f2f2';
+        screenLogElement.style.backgroundColor = '#282828';
+        screenLogElement.style.padding = '10px';
+        screenLogElement.style['z-index'] = 9999;
 
-        document.body.appendChild(screenElement);
+        screenLogElement.style.opacity = opacity;
+        screenLogElement.style['-ms-filter'] = 'progid:DXImageTransform.Microsoft.Alpha(Opacity='+(opacity*100)+')';
+        screenLogElement.style.filter = 'alpha(opacity='+(opacity*100)+')';
+        screenLogElement.style['-moz-opacity'] = opacity;
+        screenLogElement.style['-khtml-opacity'] = opacity;
+
+        document.body.appendChild(screenLogElement);
     }
 
     static log(...args)
@@ -39,6 +46,6 @@ export default class ScreenConsole
         for(let arg of args)
             text += '<div style="width:100%">' + arg + '</div>';
 
-        screenElement.innerHTML = text;
+        screenLogElement.innerHTML = text;
     }
 }

@@ -17,11 +17,9 @@ export default class Player extends Body
         super(sprite);
 
         this.crouched = false;
-        this.move = false;
+        this.move = {x: false, y: false};
         this.run = false;
         this.onEnvironment = ENVIRONMENT_TYPE.air;
-
-        this.movey = false;
 
         this.crouchScale = 0.6;
         this.walkForce = 1200;
@@ -42,48 +40,48 @@ export default class Player extends Body
     {
         if (value == 0)
         {
-            this.move = false;
+            this.move.x = false;
             this.forceDirection.x = 0;
         }else
         {
-            this.move = true;
+            this.move.x = true;
             this.forceDirection.x = value;
         }
     }
 
     walkLeft()
     {
-        this.move = true;
+        this.move.x = true;
         this.forceDirection.x = -1;
     }
 
     walkRight()
     {
-        this.move = true;
+        this.move.x = true;
         this.forceDirection.x = 1;
     }
 
     stop()
     {
-        this.move = false;
+        this.move.x = false;
         this.forceDirection.x = 0;
     }
 
     walkUp()
     {
-        this.movey = true;
+        this.move.y = true;
         this.forceDirection.y = -1;
     }
 
     walkDown()
     {
-        this.movey = true;
+        this.move.y = true;
         this.forceDirection.y = 1;
     }
 
     stopy()
     {
-        this.movey = false;
+        this.move.y = false;
         this.forceDirection.y = 0;
     }
 
@@ -92,14 +90,11 @@ export default class Player extends Body
         switch(this.onEnvironment)
         {
             case ENVIRONMENT_TYPE.air:
-
                 if(this._impulseDirection.y!=0)
                     this.addImpulse(AXIS.Y, this.jumpImpulse * this._impulseDirection.y, 0.1);
-
                 break;
 
             case ENVIRONMENT_TYPE.water:
-
                 this.applyImpulse(AXIS.Y, this.jumpImpulse * -1, 0.05);
                 break;
         }
@@ -132,14 +127,13 @@ export default class Player extends Body
 
     beginUpdate(deltatime)
     {
-        if (this.move)
-        {
-            let forceMultiply = (this.run) ? this.runMultiply : 1;
-            this.applyForce(AXIS.X, this.walkForce * forceMultiply * this.forceDirection.x);
-        }
+        let forceMultiply = (this.run) ? this.runMultiply : 1;
 
-        //if (this.movey)
-            //this.applyForce(AXIS.Y, this.walkForce * this.forceDirection.y);
+        if (this.move.x)
+            this.applyForce(AXIS.X, this.walkForce * forceMultiply * this.forceDirection.x);
+
+        if (this.move.y)
+            this.applyForce(AXIS.Y, this.walkForce * this.forceDirection.y);
 
         super.beginUpdate(deltatime);
     }

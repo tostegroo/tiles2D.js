@@ -24,7 +24,7 @@ export default class Vector2
          * @member {number}
          * @default 0
          */
-         this._y = 0;
+        this._y = 0;
 
         this.x = x;
         this.y = y;
@@ -325,8 +325,8 @@ export default class Vector2
      */
     set angle(n = 0)
     {
-        let length = Math.sqrt(this.x * this.x + this.y * this.y);
-        this.x = Math.cos(n)* length;
+        let length = this.length;
+        this.x = Math.cos(n) * length;
         this.y = Math.sin(n) * length;
         return this;
     }
@@ -340,7 +340,6 @@ export default class Vector2
     {
         return Math.atan2(this.y, this.x);
     }
-
 
     /**
      * Sets the angle of the vector
@@ -433,7 +432,7 @@ export default class Vector2
      */
     get length()
     {
-        return (Math.sqrt(this.x * this.x + this.y * this.y));
+        return Math.sqrt(this.x * this.x + this.y * this.y);
     }
 
     /**
