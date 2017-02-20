@@ -34,6 +34,7 @@ export class Ngint
         let domSprite2 = new DomSprite(130, 300, 50, 80, "#990000");
         let player2 = new Player(domSprite2);
         player2.name = "p2";
+        player2.mass = 80;
 
         this.world = new World(new Environment(1.2, {x: 0, y: 0}));
         //this.world = new World();

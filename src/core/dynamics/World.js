@@ -174,7 +174,8 @@ export default class World
     {
         let pi2 = Math.PI/2;
         let b1_new_velocity = {x: 0, y: 0},
-            b2_new_velocity = {x: 0, y: 0};
+            b2_new_velocity = {x: 0, y: 0},
+            restitution = {x: 0, y: 0};
 
         let overlap = b1.overlaps(b2);
 
@@ -186,11 +187,26 @@ export default class World
             b1_new_velocity.y = ((b1.mass - b2.mass) * b1.velocity.y + (2 * b2.mass) * b2.velocity.y) / (b1.mass + b2.mass);
             b2_new_velocity.y = ((2 * b1.mass) * b1.velocity.y + (b2.mass - b1.mass) * b2.velocity.y) / (b1.mass + b2.mass);
 
+            restitution.x = b1._bounciness.x[overlap.direction.x] + b2._bounciness.x[-overlap.direction.x];
+            restitution.y = b1._bounciness.y[overlap.direction.y] + b2._bounciness.y[-overlap.direction.y];
+
             b1.velocity.x = b1_new_velocity.x;
             b2.velocity.x = b2_new_velocity.x;
 
             b1.velocity.y = b1_new_velocity.y;
             b2.velocity.y = b2_new_velocity.y;
+
+            if((b1.velocity.x > 0 && b1_new_velocity.x < 0) || (b1.velocity.x < 0 && b1_new_velocity.x > 0))
+                b1.velocity.x *= restitution.x;
+
+            if((b2.velocity.x > 0 && b2_new_velocity.x < 0) || (b2.velocity.x < 0 && b2_new_velocity.x > 0))
+                b2.velocity.x *= restitution.x;
+
+            if((b1.velocity.y > 0 && b1_new_velocity.y < 0) || (b1.velocity.y < 0 && b1_new_velocity.y > 0))
+                b1.velocity.y *= restitution.y;
+
+            if((b2.velocity.y > 0 && b2_new_velocity.y < 0) || (b2.velocity.y < 0 && b2_new_velocity.y > 0))
+                b2.velocity.y *= restitution.y;
         }
 
         if(overlap.value.y > overlap.value.x)
@@ -209,7 +225,10 @@ export default class World
 
         ScreenConsole.log(
             "cos: "+Math.cos(overlap.angle),
-            "sin: "+Math.sin(overlap.angle)
+            "sin: "+Math.sin(overlap.angle),
+            "rx: "+restitution.x,
+            "ry: "+restitution.y
+
         );
     }
 

@@ -93,6 +93,13 @@ export default class Body
         }
         this._friction = {x: {'1':0, '-1':0}, y: {'1':0, '-1':0}};
         this._contactfriction = {x: {'1':0, '-1':0}, y: {'1':0, '-1':0}};
+
+        /**
+         * The bounciness object
+         *
+         * @private
+         * @member {object}
+         */
         this._bounciness = {x: {'1':0, '-1':0}, y: {'1':0, '-1':0}};
 
         //physics properties
@@ -104,10 +111,7 @@ export default class Body
         this._displacedVolume = 0;
         this._bounds = {left:0, right:0, top:0, bottom:0};
         this._center = {x:0, y: 0};
-        this._restitution = {x:0, y:0};
         this._position = {x:0, y:0};
-        this._direction = {x:0, y:0};
-        this._currentTile = {x:0, y:0};
         this._environmentForce = {x:0, y:0};
         this._netForce = {x:0, y:0};
         this._frictionalForce = {x:0, y:0};
@@ -127,6 +131,9 @@ export default class Body
             x: 0,
             y: 0
         }
+
+        this._direction = {x:0, y:0};
+        this._currentTile = {x:0, y:0};
 
         /**
          * The array list of impulses to appply to this body
@@ -254,9 +261,18 @@ export default class Body
     set bounciness(value)
     {
         if(typeof(value)=='number')
+        {
+            value = Math.min(Math.max(value, 0), 1);
             this._bounciness = {x: {'1': value, '-1': value}, y: {'1': value, '-1': value}};
+        }
         else if(typeof(value)=='object')
+        {
+            value.left = Math.min(Math.max(value.left, 0), 1);
+            value.right = Math.min(Math.max(value.right, 0), 1);
+            value.top = Math.min(Math.max(value.top, 0), 1);
+            value.bottom = Math.min(Math.max(value.bottom, 0), 1);
             this._bounciness = {x: {'1': value.left, '-1': value.right}, y: {'1': value.top, '-1': value.bottom}};
+        }
         else
             this._bounciness = this._bounciness;
     }
