@@ -7,8 +7,9 @@ import { KEYBOARD } from './core/input/InputConstants';
 import Player from './core/dynamics/Player';
 import World from './core/dynamics/World';
 import Environment from './core/dynamics/Environment';
-import ScreenConsole from './debug/ScreenConsole'
+import TiledLoader from './core/loaders/TiledLoader';
 
+import ScreenConsole from './debug/ScreenConsole';
 
 //change to import from file
 var vendors = ['ms', 'moz', 'webkit', 'o'];
@@ -40,6 +41,11 @@ export class Ngint
         //this.world = new World();
         this.world.addBody(player);
         this.world.addBody(player2);
+
+        TiledLoader.loadTile('./assets/tiles.json', './assets/tiles.png', function(data, image)
+        {
+            console.log(data, image);
+        });
 
         //InputManager.addInput("ns", {keyboard:[KEYBOARD.D], onPress: this.next.bind(this)});
 

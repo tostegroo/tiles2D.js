@@ -71,8 +71,6 @@ export default class Body
         this.dragCoefficient = 1.0;
 
         this.static = false;
-
-        //this.environmentForceDirection = {x:1, y:1};
         //Calculated physics properties
         /**
          * The weight of the body (set by calculation)

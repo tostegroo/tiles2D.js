@@ -36,7 +36,7 @@ export const DEG_TO_RAD = Math.PI / 180;
  * @class
  * @memberof NGINT
  */
-export default class MathHelper
+export default class MathUtil
 {
     static analogicToDigital(v, t)
     {

@@ -1,4 +1,4 @@
-import Body from './Body';
+import Body from '../dynamics/Body';
 
 /**
   * The Tile object is the basic object for build a scene, is a kind of dynamic body, but much more simple
@@ -30,9 +30,6 @@ export default class Tile extends Body
             right: false
         }
 
-        this.resistanceMultiply = {x:0, y:0};
-        this.resistanceDirection = {x:0, y:0};
-        this.environmentForceDirection = {x:0, y:0};
         this.mass = 0;
         this.sleeping = true;
 

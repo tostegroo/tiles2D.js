@@ -35,6 +35,8 @@ export default class World
         this.jointList = [];
         this.jointCount = 0;
 
+        this.tiles = [];
+
         this.contactTile =
         {
             X: {x: 0, y:0},
