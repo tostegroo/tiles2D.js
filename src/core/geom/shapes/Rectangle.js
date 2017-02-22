@@ -50,6 +50,36 @@ export default class Rectangle
          * @see NGINT.SHAPES
          */
         this.type = SHAPES.RECT;
+
+
+        /**
+         * The bounds object to return in some loop cases
+         *
+         * @member {object}
+         * @readOnly
+         * @default 0
+         */
+        this._bounds =
+        {
+            top: this.top,
+            bottom: this.bottom,
+            left: this.left,
+            right: this.right,
+            center: {x: this.x + (this.width / 2), y: this.y - (this.height / 2}
+        }
+    }
+
+    /**
+     * returns the center of the rectangle
+     *
+     * @member {number}
+     */
+    get center()
+    {
+        this._bounds.center.x = this.x + (this.width / 2);
+        this._bounds.center.y = this.y + (this.height / 2);
+
+        return this._bounds.center;
     }
 
     /**
@@ -90,6 +120,22 @@ export default class Rectangle
     get bottom()
     {
         return this.y + this.height;
+    }
+
+    /**
+     * returns the the bounds information about the rectangle
+     *
+     */
+    get bounds()
+    {
+        this._bounds.top = this.top;
+        this._bounds.bottom = this.bottom;
+        this._bounds.left = this.left;
+        this._bounds.right = this.right;
+        this._bounds.center.x = this.x + (this.width / 2);
+        this._bounds.center.y = this.y - (this.height / 2);
+
+        return this._bounds;
     }
 
     /**
@@ -146,7 +192,7 @@ export default class Rectangle
             if (y >= this.y && y < this.y + this.height)
                 return true;
         }
-        
+
         return false;
     }
 

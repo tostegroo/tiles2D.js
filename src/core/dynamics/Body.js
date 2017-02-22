@@ -17,7 +17,7 @@ export default class Body
      * @param {NGINT.Sprite} sprite - The sprite to apply body transformations
      *
      */
-    constructor(sprite)
+    constructor(sprite, shape = new Rectangle())
     {
         /**
          * The id of the body object, can be used for identify the instance or for indexing
@@ -60,24 +60,11 @@ export default class Body
         this._x = 0;
         this._y = 0;
 
-        this.top = 0;
-        this.bottom = 0;
-        this.left = 0;
-        this.right = 0;
-        this.center = {x:0, y:0};
-
-        this.frictionLimits = {left:{min:0, max:0.3}, right:{min:0, max:0.3}, top:{min:0, max:1}, bottom:{min:0, max:1}};
-
         this.dragCoefficient = 1.0;
 
         this.static = false;
+
         //Calculated physics properties
-        /**
-         * The weight of the body (set by calculation)
-         *
-         * @private
-         * @default 0
-         */
         this._sprite = null;
         this._density = 1;
         this._volume = 1;
@@ -89,11 +76,12 @@ export default class Body
             meters: {width: 1, height: 1, depth: 1},
             initial: {width: 1, height: 1, depth: 1}
         }
+        this._frictionArea = {left:{top:0, bottom:0}, right:{top:0, bottom:0}, top:{left:0, right:0}, bottom:{left:0, right:0}};
         this._friction = {x: {'1':0, '-1':0}, y: {'1':0, '-1':0}};
         this._contactfriction = {x: {'1':0, '-1':0}, y: {'1':0, '-1':0}};
 
         /**
-         * The bounciness object
+         * The bounciness of the body
          *
          * @private
          * @member {object}
@@ -109,7 +97,6 @@ export default class Body
         this._displacedVolume = 0;
         this._bounds = {left:0, right:0, top:0, bottom:0};
         this._center = {x:0, y: 0};
-        this._position = {x:0, y:0};
         this._environmentForce = {x:0, y:0};
         this._netForce = {x:0, y:0};
         this._frictionalForce = {x:0, y:0};
@@ -117,24 +104,14 @@ export default class Body
         this._buoyantForce = {x:0, y:0};
         this._movingForce = {x:0, y:0};
         this._movingImpulse = {x:0, y:0};
-        this._canScale =
-        {
-            left: true,
-            right: true,
-            top: true,
-            bottom: true
-        }
-        this._impulseDirection =
-        {
-            x: 0,
-            y: 0
-        }
-
         this._direction = {x:0, y:0};
-        this._currentTile = {x:0, y:0};
+        this._maxScale = {left: 1, right: 1, top: 1, bottom: 1};
+        this._impulseDirection = {x: 0, y: 0};
+
+        this._position = {x:0, y:0};
 
         /**
-         * The array list of impulses to appply to this body
+         * The array list of impulses to apply to this body
          *
          * @private
          * @member {array}
@@ -149,9 +126,10 @@ export default class Body
          */
         this._contactList = [];
 
+        this.shape = shape;
         this.sprite = sprite;
-        this.updatePhysicalProperties();
-        this.updateBounds();
+
+        this._updatePhysicalProperties();
     }
 
     set x(value)
@@ -181,7 +159,7 @@ export default class Body
         this._size.pixels.width = value;
         this._size.initial.width = value;
         this._size.meters.width = value / SETTINGS.PIXEL_METER_UNIT;
-        this.updatePhysicalProperties();
+        this._updatePhysicalProperties();
 
         this._sprite.width = value;
     }
@@ -196,7 +174,7 @@ export default class Body
         this._size.pixels.height = value;
         this._size.initial.height = value;
         this._size.meters.height = value / SETTINGS.PIXEL_METER_UNIT;
-        this.updatePhysicalProperties();
+        this._updatePhysicalProperties();
 
         this._sprite.height = value;
     }
@@ -211,12 +189,61 @@ export default class Body
         this._size.pixels.depth = value;
         this._size.initial.depth = value;
         this._size.meters.depth = value / SETTINGS.PIXEL_METER_UNIT;
-        this.updatePhysicalProperties();
+        this._updatePhysicalProperties();
     }
 
     get depth()
     {
         return this._size.pixels.depth;
+    }
+
+    set frictionArea(value)
+    {
+        if(typeof(value)=='number')
+            this._frictionArea = {left:{top:0, bottom:value}, right:{top:0, bottom:value}, top:{left:0, right:value}, bottom:{left:0, right:value}};
+        else if(typeof(value)=='object')
+        {
+            if(value.hasOwnProperty('left'))
+            {
+                if(typeof(value.left)=='number')
+                {
+                    this._frictionArea.left.top = value.left;
+                    this._frictionArea.left.bottom = value.left;
+                }
+                else if(typeof(value)=='object')
+                    this._frictionArea.left = value.left;
+            }
+
+            this._frictionArea = {x: {'1': value.left, '-1': value.right}, y: {'1': value.top, '-1': value.bottom}};
+        }
+        else
+            this._frictionArea = this._frictionArea;
+    }
+
+    get frictionArea()
+    {
+        return {
+            left:
+            {
+                top: this.y + (this.height * this._frictionArea.left.top),
+                bottom: this.y + (this.height * this._frictionArea.left.bottom)
+            },
+            right:
+            {
+                top: this.y + (this.height * this._frictionArea.right.top),
+                bottom: this.y + (this.height * this._frictionArea.right.bottom)
+            },
+            top:
+            {
+                left: this.x + (this.width * this._frictionArea.top.left),
+                right: this.x + (this.width * this._frictionArea.top.right)
+            },
+            bottom:
+            {
+                left: this.x + (this.width * this._frictionArea.bottom.left),
+                right: this.x + (this.width * this._frictionArea.bottom.right)
+            }
+        }
     }
 
     set sprite(value)
@@ -239,11 +266,40 @@ export default class Body
     set friction(value)
     {
         if(typeof(value)=='number')
-            this._friction = {x: {'1': value, '-1': value}, y: {'1': value, '-1': value}};
+        {
+            value = Math.min(Math.max(value, 0), 1);
+
+            this._friction.x['1'] = value;
+            this._friction.x['-1'] = value;
+            this._friction.y['1'] = value;
+            this._friction.y['-1'] = value;
+        }
         else if(typeof(value)=='object')
-            this._friction = {x: {'1': value.left, '-1': value.right}, y: {'1': value.top, '-1': value.bottom}};
-        else
-            this._friction = this._friction;
+        {
+            if(value.hasOwnProperty('left'))
+            {
+                value.left = Math.min(Math.max(value.left, 0), 1);
+                this._friction.x['1'] = value.left;
+            }
+
+            if(value.hasOwnProperty('right'))
+            {
+                value.right = Math.min(Math.max(value.right, 0), 1);
+                this._friction.x['-1'] = value.right;
+            }
+
+            if(value.hasOwnProperty('top'))
+            {
+                value.top = Math.min(Math.max(value.top, 0), 1);
+                this._friction.y['1'] = value.top;
+            }
+
+            if(value.hasOwnProperty('bottom'))
+            {
+                value.bottom = Math.min(Math.max(value.bottom, 0), 1);
+                this._friction.y['-1'] = value.bottom;
+            }
+        }
     }
 
     get friction()
@@ -261,18 +317,38 @@ export default class Body
         if(typeof(value)=='number')
         {
             value = Math.min(Math.max(value, 0), 1);
-            this._bounciness = {x: {'1': value, '-1': value}, y: {'1': value, '-1': value}};
+
+            this._bounciness.x['1'] = value;
+            this._bounciness.x['-1'] = value;
+            this._bounciness.y['1'] = value;
+            this._bounciness.y['-1'] = value;
         }
         else if(typeof(value)=='object')
         {
-            value.left = Math.min(Math.max(value.left, 0), 1);
-            value.right = Math.min(Math.max(value.right, 0), 1);
-            value.top = Math.min(Math.max(value.top, 0), 1);
-            value.bottom = Math.min(Math.max(value.bottom, 0), 1);
-            this._bounciness = {x: {'1': value.left, '-1': value.right}, y: {'1': value.top, '-1': value.bottom}};
+            if(value.hasOwnProperty('left'))
+            {
+                value.left = Math.min(Math.max(value.left, 0), 1);
+                this._bounciness.x['1'] = value.left;
+            }
+
+            if(value.hasOwnProperty('right'))
+            {
+                value.right = Math.min(Math.max(value.right, 0), 1);
+                this._bounciness.x['-1'] = value.right;
+            }
+
+            if(value.hasOwnProperty('top'))
+            {
+                value.top = Math.min(Math.max(value.top, 0), 1);
+                this._bounciness.y['1'] = value.top;
+            }
+
+            if(value.hasOwnProperty('bottom'))
+            {
+                value.bottom = Math.min(Math.max(value.bottom, 0), 1);
+                this._bounciness.y['-1'] = value.bottom;
+            }
         }
-        else
-            this._bounciness = this._bounciness;
     }
 
     get bounciness()
@@ -288,7 +364,7 @@ export default class Body
     set mass(value)
     {
         this._mass = value;
-        this.updatePhysicalProperties();
+        this._updatePhysicalProperties();
     }
 
     get mass()
@@ -299,7 +375,7 @@ export default class Body
     set volume(value)
     {
         this._size.meters.depth = value / (this._size.meters.width * this._size.meters.height);
-        this.updatePhysicalProperties();
+        this._updatePhysicalProperties();
     }
 
     get volume()
@@ -307,11 +383,11 @@ export default class Body
         return this._volume;
     }
 
-    /*set density(value)
+    set density(value)
     {
         this._density = value;
-        this._mass = this._volume * this._density;
-    }*/
+        //this._mass = this._volume * this._density;
+    }
 
     get density()
     {
@@ -343,23 +419,6 @@ export default class Body
         this._center = {x: this._position.x + (this.width / 2), y: this._position.y - (this.height / 2)};
     }
 
-    updateBounds()
-    {
-        this.top = this.y - this.height;
-        this.bottom = this.y;
-        this.left = this.x;
-        this.right = this.x + this.width;
-        this.center = {x: this.x + (this.width / 2), y: this.y - (this.height / 2)};
-        this.frictionArea =
-        {
-            left: {min: this.top + (this.height * this.frictionLimits.left.min), max: this.top + (this.height * this.frictionLimits.left.max)},
-            right: {min: this.top + (this.height * this.frictionLimits.right.min), max: this.top + (this.height * this.frictionLimits.right.max)},
-            top: {min: this.left + (this.width * this.frictionLimits.top.min), max: this.left + (this.width * this.frictionLimits.top.max)},
-            bottom: {min: this.left + (this.width * this.frictionLimits.bottom.min), max: this.left + (this.width * this.frictionLimits.bottom.max)},
-        }
-        return this;
-    }
-
     overlaps(body)
     {
         let overlaps_x = this._bounds.left < body._bounds.right && this._bounds.right > body._bounds.left;
@@ -383,15 +442,6 @@ export default class Body
             angle: angle,
             direction: {x: direction_x, y: direction_y}
         };
-    }
-
-    updatePhysicalProperties()
-    {
-        this._volume = this._size.meters.width * this._size.meters.height * this._size.meters.depth;
-        this._density = this._mass / this._volume;
-        this._area.x = this._size.meters.height * this._size.meters.depth;
-        this._area.y = this._size.meters.width * this._size.meters.depth;
-        return this;
     }
 
     applyForce(axis = "", force = 0)
@@ -482,5 +532,14 @@ export default class Body
         this.clearImpulses();
         //Update body bounds
         this.updateBounds();
+    }
+
+    _updatePhysicalProperties()
+    {
+        this._volume = this._size.meters.width * this._size.meters.height * this._size.meters.depth;
+        this._density = this._mass / this._volume;
+        this._area.x = this._size.meters.height * this._size.meters.depth;
+        this._area.y = this._size.meters.width * this._size.meters.depth;
+        return this;
     }
 }
