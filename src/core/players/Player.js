@@ -1,7 +1,7 @@
-import Body from './Body';
 import { AXIS } from '../constants';
-import { DRAG_COEFFICIENT } from './dynamicConstants';
-import { ENVIRONMENT_TYPE } from './dynamicConstants';
+import Body from '../dynamics/Body';
+import { DRAG_COEFFICIENT } from '../dynamics/dynamicConstants';
+import { ENVIRONMENT_TYPE } from '../dynamics/dynamicConstants';
 
 /**
   * The Player class can be used for a playable character
@@ -33,7 +33,7 @@ export default class Player extends Body
         this.dragCoefficient = DRAG_COEFFICIENT.human;
         this.mass = 80;
         this.friction = 0.8;
-        this.bounciness = 1;
+        this.bounciness = 0.8;
     }
 
     walkMove(value)

@@ -41,6 +41,10 @@ export default class Body
          */
         this.type = "";
 
+        this.static = false;
+
+        this.automaticPropertiesUpdate = false;
+
         /**
          * The variable to know if the tile is grabable or not
          *
@@ -56,9 +60,8 @@ export default class Body
          * @default false
          */
         this.sleeping = false;
-        this.dragCoefficient = 1.0;
 
-        this.static = false;
+        this.dragCoefficient = 1.0;
 
         //Calculated physics properties
         this._sprite = null;
@@ -89,12 +92,8 @@ export default class Body
         this.acceleration = {x:0, y:0};
 
         //variables for calculation
-        this._x = 0;
-        this._y = 0;
         this._environment = false;
         this._displacedVolume = 0;
-        this._bounds = {left:0, right:0, top:0, bottom:0};
-        this._center = {x:0, y: 0};
         this._environmentForce = {x:0, y:0};
         this._netForce = {x:0, y:0};
         this._frictionalForce = {x:0, y:0};
@@ -124,30 +123,28 @@ export default class Body
 
         this.shape = shape;
         this.sprite = sprite;
-
-        this._updatePhysicalProperties();
     }
 
     set x(value)
     {
-        this.shape.x = value;
+        //this.shape.x = value;
         this._sprite.x = value;
     }
 
     get x()
     {
-        return this.shape.x;
+        return this._sprite.x;
     }
 
     set y(value)
     {
-        this.shape.y = value;
+        //this.shape.y = value;
         this._sprite.y = value;
     }
 
     get y()
     {
-        return this.shape.y;
+        return this._sprite.y;
     }
 
     set width(value)
@@ -155,7 +152,8 @@ export default class Body
         this._size.pixels.width = value;
         this._size.initial.width = value;
         this._size.meters.width = value / SETTINGS.PIXEL_METER_UNIT;
-        this._updatePhysicalProperties();
+        this._area.y = this._size.meters.width * this._size.meters.depth;
+        this._volume = this._size.meters.width * this._size.meters.height * this._size.meters.depth;
 
         this.shape.width = value;
         this._sprite.width = value;
@@ -171,7 +169,8 @@ export default class Body
         this._size.pixels.height = value;
         this._size.initial.height = value;
         this._size.meters.height = value / SETTINGS.PIXEL_METER_UNIT;
-        this._updatePhysicalProperties();
+        this._area.x = this._size.meters.height * this._size.meters.depth;
+        this._volume = this._size.meters.width * this._size.meters.height * this._size.meters.depth;
 
         this.shape.height = value;
         this._sprite.height = value;
@@ -187,7 +186,9 @@ export default class Body
         this._size.pixels.depth = value;
         this._size.initial.depth = value;
         this._size.meters.depth = value / SETTINGS.PIXEL_METER_UNIT;
-        this._updatePhysicalProperties();
+        this._area.x = this._size.meters.height * this._size.meters.depth;
+        this._area.y = this._size.meters.width * this._size.meters.depth;
+        this._volume = this._size.meters.width * this._size.meters.height * this._size.meters.depth;
     }
 
     get depth()
@@ -254,9 +255,6 @@ export default class Body
 
         this.shape.x = this._sprite.x;
         this.shape.y = this._sprite.y;
-
-        this._x = this._sprite.x;
-        this._y = this._sprite.y;
     }
 
     get sprite()
@@ -365,7 +363,9 @@ export default class Body
     set mass(value)
     {
         this._mass = value;
-        this._updatePhysicalProperties();
+
+        if(this.automaticPropertiesUpdate)
+            this._density = this._mass / this._volume;
     }
 
     get mass()
@@ -376,7 +376,9 @@ export default class Body
     set volume(value)
     {
         this._size.meters.depth = value / (this._size.meters.width * this._size.meters.height);
-        this._updatePhysicalProperties();
+
+        if(this.automaticPropertiesUpdate)
+            this._density = this._mass / this._volume;
     }
 
     get volume()
@@ -387,7 +389,9 @@ export default class Body
     set density(value)
     {
         this._density = value;
-        //this._mass = this._volume * this._density;
+
+        if(this.automaticPropertiesUpdate)
+            this._mass = this._volume * this._density;
     }
 
     get density()
@@ -406,43 +410,6 @@ export default class Body
     get area()
     {
         return this._area;
-    }
-
-    _updateBounds()
-    {
-        this._bounds =
-        {
-            top: this._y - this.height,
-            bottom: this._y,
-            left: this._x,
-            right: this._x + this.width,
-        }
-        this._center = {x: this._x + (this.width / 2), y: this._y - (this.height / 2)};
-    }
-
-    overlaps(body)
-    {
-        let overlaps_x = this._bounds.left < body._bounds.right && this._bounds.right > body._bounds.left;
-        let overlaps_y = this._bounds.top < body._bounds.bottom && this._bounds.bottom > body._bounds.top;
-
-        let value_x = (overlaps_y) ? Math.max(0, Math.min(this._bounds.right, body._bounds.right) - Math.max(this._bounds.left, body._bounds.left)) : 0;
-        let value_y = (overlaps_x) ? Math.max(0, Math.min(this._bounds.bottom, body._bounds.bottom) - Math.max(this._bounds.top, body._bounds.top)) : 0;
-
-        let dx = this._center.x - body._center.x;
-        let direction_x = (dx > 0) ? 1 : -1;
-
-        let dy = this._center.y - body._center.y;
-        let direction_y = (dy > 0) ? 1 : -1;
-
-        let angle = Math.atan2(dy, dx);
-
-        return {
-            overlap: {x: overlaps_x, y: overlaps_y},
-            area: {x: value_x / this.width, y: value_y / this.height},
-            value: {x: value_x, y: value_y},
-            angle: angle,
-            direction: {x: direction_x, y: direction_y}
-        };
     }
 
     applyForce(axis = "", force = 0)
@@ -522,7 +489,7 @@ export default class Body
     update(deltatime = 0)
     {
         if(this._sprite)
-            this._sprite.update(deltatime);
+            this._sprite.draw(deltatime);
     }
 
     endUpdate(deltatime = 0)
@@ -532,14 +499,5 @@ export default class Body
 
         //Clear all finished impulses
         this.clearImpulses();
-    }
-
-    _updatePhysicalProperties()
-    {
-        this._volume = this._size.meters.width * this._size.meters.height * this._size.meters.depth;
-        this._density = this._mass / this._volume;
-        this._area.x = this._size.meters.height * this._size.meters.depth;
-        this._area.y = this._size.meters.width * this._size.meters.depth;
-        return this;
     }
 }

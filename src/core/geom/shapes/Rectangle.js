@@ -1,4 +1,5 @@
 import { SHAPES } from '../../constants';
+import { AXIS } from '../../constants';
 
 /**
  * Rectangle object is an area defined by its position, as indicated by its top-left corner
@@ -152,7 +153,7 @@ export default class Rectangle
         this._bounds.left = this.left;
         this._bounds.right = this.right;
         this._bounds.center.x = this.x + (this.width / 2);
-        this._bounds.center.y = this.y - (this.height / 2);
+        this._bounds.center.y = this.y + (this.height / 2);
 
         return this._bounds;
     }
@@ -295,14 +296,49 @@ export default class Rectangle
      * Checks if a shape intersects with this rectangle.
      *
      * @param {NGINT.Rectangle|NGINT.Circle} shape - The shape to compares.
+     * @param {NGINT.AXIS} axis - Optional axis, if you wanna know the intersection in one axis only.
      */
-    intersects(shape)
+    intersects(shape, axis = "")
     {
-        let intersects = this._bounds.left < body._bounds.right &&
-                    this._bounds.right > body._bounds.left &&
-                    this._bounds.top < body._bounds.bottom &&
-                    this._bounds.bottom > body._bounds.top;
+        let intersects = false;
+
+        if(axis==AXIS.X)
+            intersects = this.left < shape.right && this.right > shape.left;
+        else if(axis==AXIS.Y)
+            intersects = this.top < shape.bottom && this.bottom > shape.top;
+        else
+            intersects = this.left < shape.right && this.right > shape.left && this.top < shape.bottom && this.bottom > shape.top;
 
         return intersects;
+    }
+
+    /**
+     * Checks if a shape intersects with this rectangle.
+     *
+     * @param {NGINT.Rectangle|NGINT.Circle} shape - The shape to compares.
+     */
+    intersection(shape)
+    {
+        let returnIntersection = false;
+
+        if(this.intersects(shape))
+        {
+            this._intersection.x = Math.max(this.left, shape.left);
+            this._intersection.y = Math.max(this.top, shape.top);
+            this._intersection.width = Math.max(0, Math.min(this.right, shape.right) - Math.max(this.left, shape.left));
+            this._intersection.height = Math.max(0, Math.min(this.bottom, shape.bottom) - Math.max(this.top, shape.top));
+
+            let dx = this.center.x - shape.center.x;
+            this._intersection.direction.x = (dx > 0) ? 1 : -1;
+
+            let dy = this.center.y - shape.center.y;
+            this._intersection.direction.y = (dy > 0) ? 1 : -1;
+
+            this._intersection.angle = Math.atan2(dy, dx);
+
+            returnIntersection = this._intersection;
+        }
+
+        return returnIntersection;
     }
 }

@@ -36,7 +36,7 @@ export default class TileLayer
             tile.friction = t.friction;
             tile.bounciness = t.bounciness;
 
-            this.tileList[i] = tile;
+            this.tileList[t.name] = tile;
         }
     }
 }

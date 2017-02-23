@@ -110,6 +110,10 @@ export default class World
         totalStep = (totalStep < 1) ? 1 : totalStep;
         deltatime = (deltatime > SETTINGS.TIME_STEP) ? SETTINGS.TIME_STEP : deltatime;
 
+        //debug tile clean color
+        for(let k in this.tileList)
+            this.tileList[k].sprite.color = "#dedada";
+
         for(t = 0; t < totalStep; t++)
         {
             let b, e, c, o, clen;
@@ -123,8 +127,8 @@ export default class World
                 body = this.bodyList[b];
 
                 //put old positions in the calculation variables
-                body._x = body.x;
-                body._y = body.y;
+                body.shape.x = body.x;
+                body.shape.y = body.y;
 
                 body._environment = this.mainEnvironment;
                 for (e = 0; e < this.environmentCount; e++)
@@ -144,8 +148,7 @@ export default class World
                 this._keepInBounds(body, AXIS.X);
                 this._keepInBounds(body, AXIS.Y);
 
-                //Update body bounds
-                body._updateBounds();
+                this._calculateTileCollision(body);
             }
 
             //Body collision loop
@@ -154,14 +157,17 @@ export default class World
                 body = this.bodyList[b];
 
                 //loop through all other bodies
-                //for (o = b + 1; o < this.bodyCount; o++)
-                    //this._isOverlapping(body, this.bodyList[o]);
+                for (o = b + 1; o < this.bodyCount; o++)
+                    this._calculateBodyCollision(body, this.bodyList[o]);
 
                 //Do the update of the body
                 body.update(deltatime);
 
                 //Do everything that is needed after the update
                 body.endUpdate(deltatime);
+
+                body.x = body.shape.x;
+                body.y = body.shape.y;
             }
 
             this._time += deltatime;
@@ -170,16 +176,61 @@ export default class World
 
     endUpdate(deltatime = 0){}
 
-    _isOverlapping(b1, b2)
+    _calculateTileCollision(b)
+    {
+        let minTileX = Math.floor(b.shape.left / SETTINGS.TILE_SIZE);
+        let maxTileX = Math.ceil(b.shape.right / SETTINGS.TILE_SIZE);
+
+        let minTileY = Math.floor(b.shape.top / SETTINGS.TILE_SIZE);
+        let maxTileY = Math.ceil(b.shape.bottom / SETTINGS.TILE_SIZE);
+
+        let restitution = {x: 0, y: 0};
+        let x, y;
+        for (x = minTileX; x < maxTileX; x++)
+        {
+            for (y = minTileY; y < maxTileY; y++)
+            {
+                let tile = this.tileList[x+'-'+y];
+                if(tile)
+                {
+                    let intersectionData = b.shape.intersection(tile.shape);
+
+                    if(intersectionData)
+                    {
+                        restitution.x = b._bounciness.x[intersectionData.direction.x] + tile._bounciness.x[-intersectionData.direction.x];
+                        restitution.y = b._bounciness.y[intersectionData.direction.y] + tile._bounciness.y[-intersectionData.direction.y];
+
+                        if(intersectionData.height > intersectionData.width)
+                        {
+                            b._impulseDirection.y = intersectionData.direction.x;
+                            b.shape.x += intersectionData.width * intersectionData.direction.x;
+                            b.velocity.x = -b.velocity.x * restitution.x;
+                        }
+
+                        if(intersectionData.width > intersectionData.height)
+                        {
+                            b._impulseDirection.x = intersectionData.direction.y;
+                            b.shape.y += intersectionData.height * intersectionData.direction.y;
+                            b.velocity.y = -b.velocity.y * restitution.y;
+                        }
+                    }
+
+                    this.tileList[x+'-'+y].sprite.color = "#333";
+                }
+            }
+        }
+    }
+
+    _calculateBodyCollision(b1, b2)
     {
         let pi2 = Math.PI/2;
         let b1_new_velocity = {x: 0, y: 0},
             b2_new_velocity = {x: 0, y: 0},
             restitution = {x: 0, y: 0};
 
-        let overlap = b1.overlaps(b2);
+        let intersectionData = b1.shape.intersection(b2.shape);
 
-        if(overlap.overlap.x && overlap.overlap.y)
+        if(intersectionData)
         {
             b1_new_velocity.x = ((b1.mass - b2.mass) * b1.velocity.x + (2 * b2.mass) * b2.velocity.x) / (b1.mass + b2.mass);
             b2_new_velocity.x = ((2 * b1.mass) * b1.velocity.x + (b2.mass - b1.mass) * b2.velocity.x) / (b1.mass + b2.mass);
@@ -187,8 +238,8 @@ export default class World
             b1_new_velocity.y = ((b1.mass - b2.mass) * b1.velocity.y + (2 * b2.mass) * b2.velocity.y) / (b1.mass + b2.mass);
             b2_new_velocity.y = ((2 * b1.mass) * b1.velocity.y + (b2.mass - b1.mass) * b2.velocity.y) / (b1.mass + b2.mass);
 
-            restitution.x = b1._bounciness.x[overlap.direction.x] + b2._bounciness.x[-overlap.direction.x];
-            restitution.y = b1._bounciness.y[overlap.direction.y] + b2._bounciness.y[-overlap.direction.y];
+            restitution.x = b1._bounciness.x[intersectionData.direction.x] + b2._bounciness.x[-intersectionData.direction.x];
+            restitution.y = b1._bounciness.y[intersectionData.direction.y] + b2._bounciness.y[-intersectionData.direction.y];
 
             b1.velocity.x = b1_new_velocity.x;
             b2.velocity.x = b2_new_velocity.x;
@@ -207,26 +258,26 @@ export default class World
 
             if((b2.velocity.y > 0 && b2_new_velocity.y < 0) || (b2.velocity.y < 0 && b2_new_velocity.y > 0))
                 b2.velocity.y *= restitution.y;
-        }
 
-        if(overlap.value.y > overlap.value.x)
-        {
-            b1._impulseDirection.y = overlap.direction.x;
-            b2._impulseDirection.y = -overlap.direction.x;
-            b1._x += overlap.value.x * overlap.direction.x;
-        }
+            if(intersectionData.height > intersectionData.width)
+            {
+                b1._impulseDirection.y = intersectionData.direction.x;
+                b2._impulseDirection.y = -intersectionData.direction.x;
+                b1.shape.x += intersectionData.width * intersectionData.direction.x;
+            }
 
-        if(overlap.value.x > overlap.value.y)
-        {
-            b1._impulseDirection.x = overlap.direction.y;
-            b2._impulseDirection.x = -overlap.direction.y;
-            b1._y += overlap.value.y * overlap.direction.y;
-        }
+            if(intersectionData.width > intersectionData.height)
+            {
+                b1._impulseDirection.x = intersectionData.direction.y;
+                b2._impulseDirection.x = -intersectionData.direction.y;
+                b1.shape.y += intersectionData.height * intersectionData.direction.y;
+            }
 
-        ScreenConsole.log(
-            "cos: "+overlap.overlap.x,
-            "sin: "+overlap.overlap.y
-        );
+            ScreenConsole.log(
+                "cos: "+intersectionData.width,
+                "sin: "+intersectionData.height
+            );
+        }
     }
 
     _calculateForces(b, a, deltatime = 0)
@@ -251,37 +302,23 @@ export default class World
 
         b.acceleration[a] = b._netForce[a] / b.mass;
         b.velocity[a] += deltatime * b.acceleration[a];
-        b['_'+a] += (deltatime * b.velocity[a]) * SETTINGS.PIXEL_METER_UNIT;
+        b.shape[a] += (deltatime * b.velocity[a]) * SETTINGS.PIXEL_METER_UNIT;
 
-        //console.log(b['_'+a]);
-
-        b._direction[a] = ((b['_'+a] - b[a]) > 0) ? -1 : ((b['_'+a] - b[a]) < 0) ? 1 : 0;
+        b._direction[a] = ((b.shape[a] - b[a]) > 0) ? -1 : ((b.shape[a] - b[a]) < 0) ? 1 : 0;
     }
 
     _keepInBounds(b, a)
     {
-        let collider_bounciness = 0;
-
-        if(b['_'+a] <= this._limits[a].min)
+        if(b.shape[a] <= this._limits[a].min)
         {
-            b._impulseDirection[a] = 1;
-            b['_'+a] = this._limits[a].min;
+            b.shape[a] = this._limits[a].min;
             b.velocity[a] = 0;
-
-            //b._restitution[a] = (collider_bounciness + b._bounciness[a]['1']) / 2;
-            //b.velocity[a] *= b._restitution[a] * -b._direction[a];
         }
 
-        if(b['_'+a] >= this._limits[a].max)
+        if(b.shape[a] >= this._limits[a].max)
         {
-            b._impulseDirection[a] = -1;
-            b['_'+a] = this._limits[a].max;
+            b.shape[a] = this._limits[a].max;
             b.velocity[a] = 0;
-
-            //b._restitution[a] = (collider_bounciness + b._bounciness[a]['-1']) / 2;
-            //b.velocity[a] *= b._restitution[a] * b._direction[a];
         }
-
-        b[a] = b['_'+a];
     }
 }

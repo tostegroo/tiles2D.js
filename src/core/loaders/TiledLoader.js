@@ -67,10 +67,10 @@ export default class TiledLoader
             image:
             {
                 src: tileset.image,
-                width: tileset.imagewidth,
-                height: tileset.imageheight,
-                tile_width: tileset.tilewidth,
-                tile_height: tileset.tileheight
+                width: parseInt(tileset.imagewidth),
+                height: parseInt(tileset.imageheight),
+                tile_width: parseInt(tileset.tilewidth),
+                tile_height: parseInt(tileset.tileheight)
             },
             tiles: []
         };
@@ -102,8 +102,8 @@ export default class TiledLoader
                         x: imageX,
                         y: imageY
                     },
-                    friction: friction,
-                    bounciness: bounciness
+                    friction: parseInt(friction),
+                    bounciness: parseInt(bounciness)
                 }
 
                 idx++;

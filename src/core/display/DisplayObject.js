@@ -7,15 +7,6 @@
 */
 export default class DisplayObject
 {
-    /**
-     *
-     * @param [x=0] x - The x position
-     * @param [y=0] y - The y position
-     * @param [width=10] width - The width
-     * @param [height=10] height - The height
-     * @param [color='#000'] color - The color
-     *
-     */
     constructor()
     {
         /**
@@ -59,13 +50,6 @@ export default class DisplayObject
         this._parent = null;
         this._mouseX = 0;
         this._mouseY = 0;
-        this._bounds =
-        {
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0
-        }
         this._worldCenter = {x:0, y:0};
         this._center = {x:0, y:0};
     }
@@ -73,7 +57,6 @@ export default class DisplayObject
     set x(value)
     {
         this._x = value;
-        this.updateBounds();
     }
 
     get x()
@@ -84,7 +67,6 @@ export default class DisplayObject
     set y(value)
     {
         this._y = value;
-        this.updateBounds();
     }
 
     get y()
@@ -95,7 +77,6 @@ export default class DisplayObject
     set width(value)
     {
         this._width = value;
-        this.updateBounds();
     }
 
     get width()
@@ -106,7 +87,6 @@ export default class DisplayObject
     set height(value)
     {
         this._height = value;
-        this.updateBounds();
     }
 
     get height()
@@ -134,13 +114,11 @@ export default class DisplayObject
         return this._alpha;
     }
 
-    get bounds()
-    {
-        return this._bounds;
-    }
-
     get center()
     {
+        this._center.x = this.x + (this.width / 2);
+        this._center.y = this.y + (this.height / 2);
+
         return this._center;
     }
 
@@ -162,27 +140,7 @@ export default class DisplayObject
             this.localPosition();
     }
 
-    hitTestObject(displayObject = null)
-    {
-
-    }
-
-    hitTestPoint(x = 0, y = 0)
-    {
-
-    }
-
-    updateBounds()
-    {
-        this._bounds.top = this.y - this.height;
-        this._bounds.bottom = this.y;
-        this._bounds.left = this.x;
-        this._bounds.right = this.x + this.width;
-        this._worldCenter = {x: this.x + (this.width / 2), y: this.y - (this.height / 2)};
-        this._center = {x: this.width / 2, y: this.height / 2};
-    }
-
-    update(deltatime = 0)
+    draw(deltatime = 0)
     {
 
     }

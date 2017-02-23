@@ -4,7 +4,7 @@
 import DomSprite from './core/display/sprites/DomSprite';
 import InputManager from './core/input/InputManager';
 import { KEYBOARD } from './core/input/InputConstants';
-import Player from './core/dynamics/Player';
+import Player from './core/players/Player';
 import World from './core/dynamics/World';
 import Environment from './core/dynamics/Environment';
 import TiledLoader from './core/loaders/TiledLoader';
@@ -32,13 +32,13 @@ export class Ngint
         //let floorSprite = new DomSprite(0, 800, 1920, 80, "#dedada");
         //document.body.appendChild(floorSprite.domElement);
 
-        let domSprite = new DomSprite(80, 300, 50, 80, "#000");
+        let domSprite = new DomSprite(80, 20, 50, 80, "#000");
         let player = new Player(domSprite);
         player.name = "p1";
 
         console.log(player)
 
-        let domSprite2 = new DomSprite(130, 300, 50, 80, "#990000");
+        let domSprite2 = new DomSprite(130, 20, 50, 80, "#990000");
         let player2 = new Player(domSprite2);
         player2.name = "p2";
         player2.mass = 80;
@@ -64,7 +64,7 @@ export class Ngint
         InputManager.addInput("up", {keyboard:[KEYBOARD.UP], onPress: player.walkUp.bind(player), onRelease: player.stopy.bind(player)});
         InputManager.addInput("down", {keyboard:[KEYBOARD.DOWN], onPress: player.walkDown.bind(player), onRelease: player.stopy.bind(player)});
 
-        ScreenConsole.add(0, 0, 300, 150);
+        ScreenConsole.add(1920-300, 0, 300, 150);
         this.update();
 
         console.log("Ngint created");

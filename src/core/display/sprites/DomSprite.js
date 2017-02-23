@@ -73,7 +73,7 @@ export default class DomSprite extends DisplayObject
     {
         super.y = value;
 
-        let transform = 'translate3d('+super.x+'px, '+(value-this.height)+'px, 0px)';
+        let transform = 'translate3d('+super.x+'px, '+value+'px, 0px)';
         if(this.domElement)
         {
             this.domElement.style.webkitTransform = transform;
@@ -147,7 +147,7 @@ export default class DomSprite extends DisplayObject
         return super.alpha;
     }
 
-    update(deltatime = 0)
+    draw(deltatime = 0)
     {
 
     }
