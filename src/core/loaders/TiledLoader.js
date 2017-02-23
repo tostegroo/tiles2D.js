@@ -1,4 +1,4 @@
-import LoaderUtil from '../utils/LoaderUtil'
+import LoaderUtil from '../utils/LoaderUtil';
 
 /**
   * The TiledLoader is used to load json and js files from tiled app
@@ -27,15 +27,19 @@ export default class TiledLoader
                 {
                     LoaderUtil.loadImage(imagefile, function(imgResponse)
                     {
-                        callback(dataResponse, imgResponse);
+                        dataResponse.image.src = imgResponse.src;
+                        dataResponse.image.width = imgResponse.width;
+                        dataResponse.image.height = imgResponse.height;
+
+                        callback(dataResponse);
                     });
                 }
                 else
-                    callback(dataResponse, false);
+                    callback(dataResponse);
             });
         }
         else
-            callback(false, false);
+            callback(false);
     }
 
     static loadTileData(datafile, callback)
@@ -55,20 +59,27 @@ export default class TiledLoader
 
     static parseTiledData(data)
     {
-        console.log(data);
-
         let tileset = data.tilesets[0];
         let columns = tileset.columns;
         let tileprops = tileset.tileproperties ? tileset.tileproperties : {};
         let responseData =
         {
-            image: tileset.image,
+            image:
+            {
+                src: tileset.image,
+                width: tileset.imagewidth,
+                height: tileset.imageheight,
+                tile_width: tileset.tilewidth,
+                tile_height: tileset.tileheight
+            },
             tiles: []
         };
 
         let layer = data.layers[0];
         let w = data.width;
         let h = data.height;
+        var idx = 0;
+
         for (let i = 0, len = layer.data.length; i < len; i++)
         {
             let tile = layer.data[i];
@@ -81,16 +92,21 @@ export default class TiledLoader
                 let imageY = Math.floor((tile-1)/columns);
                 let imageX = (tile-1)%columns;
 
-                console.log(tile, imageX, imageY);
-
-                responseData.tiles.push(
+                responseData.tiles[idx] =
                 {
-                    position: {x: x, y: y},
                     name: x+"-"+y,
-                    image_position: {x: imageX, y: imageY},
+                    x: x,
+                    y: y,
+                    image:
+                    {
+                        x: imageX,
+                        y: imageY
+                    },
                     friction: friction,
                     bounciness: bounciness
-                });
+                }
+
+                idx++;
             }
 
         }

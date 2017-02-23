@@ -35,7 +35,7 @@ export default class World
         this.jointList = [];
         this.jointCount = 0;
 
-        this.tiles = [];
+        this.tileList = [];
 
         this.contactTile =
         {
@@ -44,8 +44,8 @@ export default class World
         };
         this._limits =
         {
-            x: {min: 50, max: 1800},
-            y: {min: 100, max: 800}
+            x: {min: -150, max: 1900},
+            y: {min: -100, max: 1200}
         }
 
         this._time = 0;
@@ -95,10 +95,12 @@ export default class World
         }
     }
 
-    beginUpdate(deltatime = 0)
+    setTileList(tilelist = [])
     {
-
+        this.tileList = tilelist;
     }
+
+    beginUpdate(deltatime = 0){}
 
     update(deltatime = 0)
     {
@@ -120,6 +122,10 @@ export default class World
             {
                 body = this.bodyList[b];
 
+                //put old positions in the calculation variables
+                body._x = body.x;
+                body._y = body.y;
+
                 body._environment = this.mainEnvironment;
                 for (e = 0; e < this.environmentCount; e++)
                 {
@@ -131,7 +137,12 @@ export default class World
                 body.beginUpdate(deltatime);
 
                 //Projetcs the movement before calculations
-                this._updateForces(body, deltatime);
+                this._calculateForces(body, AXIS.X, deltatime);
+                this._calculateForces(body, AXIS.Y, deltatime);
+
+                //Validates all the collisions
+                this._keepInBounds(body, AXIS.X);
+                this._keepInBounds(body, AXIS.Y);
 
                 //Update body bounds
                 body._updateBounds();
@@ -143,18 +154,8 @@ export default class World
                 body = this.bodyList[b];
 
                 //loop through all other bodies
-                if(b==0)
-                {
-                    for (o = b + 1; o < this.bodyCount; o++)
-                    {
-                        let body2 = this.bodyList[o];
-                        this._isOverlapping(body, body2);
-                    }
-                }
-
-                //Validates all the collisions
-                this._validateCollisions(body, AXIS.X);
-                this._validateCollisions(body, AXIS.Y);
+                //for (o = b + 1; o < this.bodyCount; o++)
+                    //this._isOverlapping(body, this.bodyList[o]);
 
                 //Do the update of the body
                 body.update(deltatime);
@@ -167,10 +168,7 @@ export default class World
         }
     }
 
-    endUpdate(deltatime = 0)
-    {
-
-    }
+    endUpdate(deltatime = 0){}
 
     _isOverlapping(b1, b2)
     {
@@ -215,43 +213,26 @@ export default class World
         {
             b1._impulseDirection.y = overlap.direction.x;
             b2._impulseDirection.y = -overlap.direction.x;
-            b1._position.x += overlap.value.x * overlap.direction.x;
+            b1._x += overlap.value.x * overlap.direction.x;
         }
 
         if(overlap.value.x > overlap.value.y)
         {
             b1._impulseDirection.x = overlap.direction.y;
             b2._impulseDirection.x = -overlap.direction.y;
-            b1._position.y += overlap.value.y * overlap.direction.y;
+            b1._y += overlap.value.y * overlap.direction.y;
         }
 
         ScreenConsole.log(
-            "cos: "+Math.cos(overlap.angle),
-            "sin: "+Math.sin(overlap.angle),
-            "rx: "+restitution.x,
-            "ry: "+restitution.y
-
+            "cos: "+overlap.overlap.x,
+            "sin: "+overlap.overlap.y
         );
-    }
-
-    _updateForces(b, deltatime = 0)
-    {
-        b._position = {x: b.x, y: b.y};
-
-        b._currentTile.x = Math.floor(b.left / SETTINGS.TILE_SIZE);
-        b._currentTile.y = Math.floor(b.top / SETTINGS.TILE_SIZE);
-
-        //this._upadteContactTiles(b);
-
-        this._calculateForces(b, AXIS.X, deltatime);
-        this._calculateForces(b, AXIS.Y, deltatime);
     }
 
     _calculateForces(b, a, deltatime = 0)
     {
         let vdir = (b.velocity[a] > 0) ? -1 : (b.velocity[a] < 0) ? 1 : 0;
         let ia = a==AXIS.X ? AXIS.Y : AXIS.X;
-        let idir =
 
         b._frictionalForce[a] = 0;
         if(b._impulseDirection[ia]!=0)
@@ -270,60 +251,37 @@ export default class World
 
         b.acceleration[a] = b._netForce[a] / b.mass;
         b.velocity[a] += deltatime * b.acceleration[a];
-        b._position[a] += (deltatime * b.velocity[a]) * SETTINGS.PIXEL_METER_UNIT;
-        b._direction[a] = ((b._position[a] - b[a]) > 0) ? -1 : ((b._position[a] - b[a]) < 0) ? 1 : 0;
+        b['_'+a] += (deltatime * b.velocity[a]) * SETTINGS.PIXEL_METER_UNIT;
+
+        //console.log(b['_'+a]);
+
+        b._direction[a] = ((b['_'+a] - b[a]) > 0) ? -1 : ((b['_'+a] - b[a]) < 0) ? 1 : 0;
     }
 
-    //keepInBounds
-    _validateCollisions(b, a)
+    _keepInBounds(b, a)
     {
         let collider_bounciness = 0;
 
-        if(b._position[a] <= this._limits[a].min)
+        if(b['_'+a] <= this._limits[a].min)
         {
             b._impulseDirection[a] = 1;
-            b._position[a] = this._limits[a].min;
+            b['_'+a] = this._limits[a].min;
             b.velocity[a] = 0;
 
             //b._restitution[a] = (collider_bounciness + b._bounciness[a]['1']) / 2;
             //b.velocity[a] *= b._restitution[a] * -b._direction[a];
         }
 
-        if(b._position[a] >= this._limits[a].max)
+        if(b['_'+a] >= this._limits[a].max)
         {
             b._impulseDirection[a] = -1;
-            b._position[a] = this._limits[a].max;
+            b['_'+a] = this._limits[a].max;
             b.velocity[a] = 0;
 
             //b._restitution[a] = (collider_bounciness + b._bounciness[a]['-1']) / 2;
             //b.velocity[a] *= b._restitution[a] * b._direction[a];
         }
 
-        b[a] = b._position[a];
-    }
-
-    _upadteContactTiles(b)
-    {
-        if(b._direction.x <= 0)
-        {
-            this.contactTile.X.x = Math.floor(b.frictionArea.left / SETTINGS.TILE_SIZE);
-            this.contactTile.Y.x = Math.floor((b.left - 0.1) / SETTINGS.TILE_SIZE);
-        }
-        else
-        {
-            this.contactTile.X.x = Math.floor(b.frictionArea.right / SETTINGS.TILE_SIZE);
-            this.contactTile.Y.x = Math.floor((b.right + 0.1) / SETTINGS.TILE_SIZE);
-        }
-
-        if(b._direction.y <= 0)
-        {
-            this.contactTile.Y.y = Math.floor(b.frictionArea.top / SETTINGS.TILE_SIZE);
-            this.contactTile.X.y = Math.floor((b.top - 0.1) / SETTINGS.TILE_SIZE);
-        }
-        else
-        {
-            this.contactTile.Y.y = Math.floor(b.frictionArea.bottom / SETTINGS.TILE_SIZE);
-            this.contactTile.X.y = Math.floor((b.bottom + 0.1) / SETTINGS.TILE_SIZE);
-        }
+        b[a] = b['_'+a];
     }
 }

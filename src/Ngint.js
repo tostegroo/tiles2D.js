@@ -8,29 +8,35 @@ import Player from './core/dynamics/Player';
 import World from './core/dynamics/World';
 import Environment from './core/dynamics/Environment';
 import TiledLoader from './core/loaders/TiledLoader';
+import TileLayer from './core/layers/TileLayer';
 
 import ScreenConsole from './debug/ScreenConsole';
 
 //change to import from file
-var vendors = ['ms', 'moz', 'webkit', 'o'];
-for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x)
+window._vendors = ['ms', 'moz', 'webkit', 'o'];
+for (var x = 0; x < window._vendors.length && !window.requestAnimationFrame; ++x)
 {
-    window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
-    window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+    window.requestAnimationFrame = window[window._vendors[x] + 'RequestAnimationFrame'];
+    window.cancelAnimationFrame = window[window._vendors[x] + 'CancelAnimationFrame'] || window[window._vendors[x] + 'CancelRequestAnimationFrame'];
 }
+
+window._ngintcontainer = null;
 
 export class Ngint
 {
-    constructor()
+    constructor(container = null)
     {
         this._loopID = false;
+        window._ngintcontainer = container;
 
-        let floorSprite = new DomSprite(0, 800, 1920, 80, "#dedada");
-        document.body.appendChild(floorSprite.domElement);
+        //let floorSprite = new DomSprite(0, 800, 1920, 80, "#dedada");
+        //document.body.appendChild(floorSprite.domElement);
 
         let domSprite = new DomSprite(80, 300, 50, 80, "#000");
         let player = new Player(domSprite);
         player.name = "p1";
+
+        console.log(player)
 
         let domSprite2 = new DomSprite(130, 300, 50, 80, "#990000");
         let player2 = new Player(domSprite2);
@@ -42,10 +48,11 @@ export class Ngint
         this.world.addBody(player);
         this.world.addBody(player2);
 
-        TiledLoader.loadTile('./assets/tiles.json', './assets/tiles.png', function(data, image)
+        TiledLoader.loadTile('./assets/tiles.json', './assets/tiles.png', function(data)
         {
-            console.log(data, image);
-        });
+            let tilelayer = new TileLayer(data);
+            this.world.setTileList(tilelayer.tileList);
+        }.bind(this));
 
         //InputManager.addInput("ns", {keyboard:[KEYBOARD.D], onPress: this.next.bind(this)});
 
@@ -56,9 +63,6 @@ export class Ngint
 
         InputManager.addInput("up", {keyboard:[KEYBOARD.UP], onPress: player.walkUp.bind(player), onRelease: player.stopy.bind(player)});
         InputManager.addInput("down", {keyboard:[KEYBOARD.DOWN], onPress: player.walkDown.bind(player), onRelease: player.stopy.bind(player)});
-
-        document.body.appendChild(domSprite.domElement);
-        document.body.appendChild(domSprite2.domElement);
 
         ScreenConsole.add(0, 0, 300, 150);
         this.update();

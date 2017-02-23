@@ -56,10 +56,6 @@ export default class Body
          * @default false
          */
         this.sleeping = false;
-
-        this._x = 0;
-        this._y = 0;
-
         this.dragCoefficient = 1.0;
 
         this.static = false;
@@ -93,6 +89,8 @@ export default class Body
         this.acceleration = {x:0, y:0};
 
         //variables for calculation
+        this._x = 0;
+        this._y = 0;
         this._environment = false;
         this._displacedVolume = 0;
         this._bounds = {left:0, right:0, top:0, bottom:0};
@@ -107,8 +105,6 @@ export default class Body
         this._direction = {x:0, y:0};
         this._maxScale = {left: 1, right: 1, top: 1, bottom: 1};
         this._impulseDirection = {x: 0, y: 0};
-
-        this._position = {x:0, y:0};
 
         /**
          * The array list of impulses to apply to this body
@@ -134,24 +130,24 @@ export default class Body
 
     set x(value)
     {
-        this._x = value;
+        this.shape.x = value;
         this._sprite.x = value;
     }
 
     get x()
     {
-        return this._x;
+        return this.shape.x;
     }
 
     set y(value)
     {
-        this._y = value;
+        this.shape.y = value;
         this._sprite.y = value;
     }
 
     get y()
     {
-        return this._y;
+        return this.shape.y;
     }
 
     set width(value)
@@ -161,6 +157,7 @@ export default class Body
         this._size.meters.width = value / SETTINGS.PIXEL_METER_UNIT;
         this._updatePhysicalProperties();
 
+        this.shape.width = value;
         this._sprite.width = value;
     }
 
@@ -176,6 +173,7 @@ export default class Body
         this._size.meters.height = value / SETTINGS.PIXEL_METER_UNIT;
         this._updatePhysicalProperties();
 
+        this.shape.height = value;
         this._sprite.height = value;
     }
 
@@ -254,8 +252,11 @@ export default class Body
         this.height = this._sprite.height;
         this.depth = this._sprite.width;
 
-        this.x = this._sprite.x;
-        this.y = this._sprite.y;
+        this.shape.x = this._sprite.x;
+        this.shape.y = this._sprite.y;
+
+        this._x = this._sprite.x;
+        this._y = this._sprite.y;
     }
 
     get sprite()
@@ -411,12 +412,12 @@ export default class Body
     {
         this._bounds =
         {
-            top: this._position.y - this.height,
-            bottom: this._position.y,
-            left: this._position.x,
-            right: this._position.x + this.width,
+            top: this._y - this.height,
+            bottom: this._y,
+            left: this._x,
+            right: this._x + this.width,
         }
-        this._center = {x: this._position.x + (this.width / 2), y: this._position.y - (this.height / 2)};
+        this._center = {x: this._x + (this.width / 2), y: this._y - (this.height / 2)};
     }
 
     overlaps(body)
@@ -528,10 +529,9 @@ export default class Body
     {
         //Clear forces
         this.clearForces();
+
         //Clear all finished impulses
         this.clearImpulses();
-        //Update body bounds
-        this.updateBounds();
     }
 
     _updatePhysicalProperties()

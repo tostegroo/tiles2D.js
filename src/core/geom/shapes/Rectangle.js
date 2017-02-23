@@ -55,7 +55,8 @@ export default class Rectangle
         /**
          * The bounds object to return in some loop cases
          *
-         * @member {object}
+         * @private
+         * @member {object.JSON}
          * @readOnly
          * @default 0
          */
@@ -65,7 +66,25 @@ export default class Rectangle
             bottom: this.bottom,
             left: this.left,
             right: this.right,
-            center: {x: this.x + (this.width / 2), y: this.y - (this.height / 2}
+            center: {x: this.x + (this.width / 2), y: this.y - (this.height / 2)}
+        }
+
+        /**
+         * The intersection object to return in some loop cases
+         *
+         * @private
+         * @member {object.JSON}
+         * @readOnly
+         * @default 0
+         */
+        this._intersection =
+        {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+            angle: 0,
+            direction: {x:0 , y:0}
         }
     }
 
@@ -270,5 +289,20 @@ export default class Rectangle
         this.width = x2 - x1;
         this.y = y1;
         this.height = y2 - y1;
+    }
+
+    /**
+     * Checks if a shape intersects with this rectangle.
+     *
+     * @param {NGINT.Rectangle|NGINT.Circle} shape - The shape to compares.
+     */
+    intersects(shape)
+    {
+        let intersects = this._bounds.left < body._bounds.right &&
+                    this._bounds.right > body._bounds.left &&
+                    this._bounds.top < body._bounds.bottom &&
+                    this._bounds.bottom > body._bounds.top;
+
+        return intersects;
     }
 }

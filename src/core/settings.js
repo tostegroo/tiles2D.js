@@ -35,7 +35,7 @@ export default
      * @type {number}
      * @default 50
      */
-    TILE_SIZE: 32,
+    TILE_SIZE: 50,
 
     /**
      * The time step to calculate the physics

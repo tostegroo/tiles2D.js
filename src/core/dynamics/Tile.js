@@ -15,7 +15,7 @@ export default class Tile extends Body
      */
     constructor(sprite)
     {
-        super();
+        super(sprite);
         /**
          * The variable to know if the tile can be passed through
          *
@@ -32,8 +32,5 @@ export default class Tile extends Body
 
         this.mass = 0;
         this.sleeping = true;
-
-        this.sprite = sprite;
-        updateBounds();
     }
 }
