@@ -194,9 +194,14 @@ export default class World
                 if(tile)
                 {
                     let intersectionData = b.shape.intersection(tile.shape);
-
                     if(intersectionData)
                     {
+                        ScreenConsole.log(
+                            "angle: "+b.velocity.angle,
+                            "cos: "+Math.cos(b.velocity.angle),
+                            "sin: "+Math.sin(b.velocity.angle)
+                        );
+
                         restitution.x = b._bounciness.x[intersectionData.direction.x] + tile._bounciness.x[-intersectionData.direction.x];
                         restitution.y = b._bounciness.y[intersectionData.direction.y] + tile._bounciness.y[-intersectionData.direction.y];
 
@@ -272,11 +277,6 @@ export default class World
                 b2._impulseDirection.x = -intersectionData.direction.y;
                 b1.shape.y += intersectionData.height * intersectionData.direction.y;
             }
-
-            ScreenConsole.log(
-                "cos: "+intersectionData.width,
-                "sin: "+intersectionData.height
-            );
         }
     }
 
