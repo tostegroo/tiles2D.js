@@ -71,6 +71,8 @@ export default class Body
         this._mass = 70;
         this._size =
         {
+            min: {left: 0, right: 0, top: 0, bottom: 0},
+            max: {left: 1, right: 1, top: 1, bottom: 1},
             pixels: {width: 1,height: 1,depth: 1},
             meters: {width: 1, height: 1, depth: 1},
             initial: {width: 1, height: 1, depth: 1}
@@ -102,8 +104,8 @@ export default class Body
         this._movingForce = {x:0, y:0};
         this._movingImpulse = {x:0, y:0};
         this._direction = {x:0, y:0};
-        this._maxScale = {left: 1, right: 1, top: 1, bottom: 1};
         this._impulseDirection = {x: 0, y: 0};
+        this._restitution = {x: 0, y: 0};
 
         /**
          * The array list of impulses to apply to this body
@@ -127,7 +129,6 @@ export default class Body
 
     set x(value)
     {
-        //this.shape.x = value;
         this._sprite.x = value;
     }
 
@@ -138,7 +139,6 @@ export default class Body
 
     set y(value)
     {
-        //this.shape.y = value;
         this._sprite.y = value;
     }
 
@@ -155,7 +155,6 @@ export default class Body
         this._area.y = this._size.meters.width * this._size.meters.depth;
         this._volume = this._size.meters.width * this._size.meters.height * this._size.meters.depth;
 
-        this.shape.width = value;
         this._sprite.width = value;
     }
 
@@ -172,7 +171,6 @@ export default class Body
         this._area.x = this._size.meters.height * this._size.meters.depth;
         this._volume = this._size.meters.width * this._size.meters.height * this._size.meters.depth;
 
-        this.shape.height = value;
         this._sprite.height = value;
     }
 
@@ -255,6 +253,8 @@ export default class Body
 
         this.shape.x = this._sprite.x;
         this.shape.y = this._sprite.y;
+        this.shape.width = this._sprite.width;
+        this.shape.height = this._sprite.height;
     }
 
     get sprite()
@@ -476,12 +476,18 @@ export default class Body
         return this;
     }
 
-    beginUpdate(deltatime = 0)
+    clearContacts()
     {
-        //Reset all the impulse directions
         this._impulseDirection.x = 0;
         this._impulseDirection.y = 0;
+        this._restitution.x = 0;
+        this._restitution.y = 0;
+        this._contactfriction.x['-1'] = this._contactfriction.x['1'] = 0;
+        this._contactfriction.y['-1'] = this._contactfriction.y['1'] = 0;
+    }
 
+    beginUpdate(deltatime = 0)
+    {
         //Apply all the impulses
         this.applyImpulses(deltatime);
     }

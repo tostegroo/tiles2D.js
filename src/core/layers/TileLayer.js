@@ -29,8 +29,11 @@ export default class TileLayer
         {
             let t = tileData.tiles[i];
 
+            let color = t.friction==1 ? "#c2c2c2" : "#d2d2d2";
+            color = t.friction==0.1 ? "#dedaff" : color;
+
             //think about other type of sprite
-            let sprite = new DomSprite(t.x * SETTINGS.TILE_SIZE, t.y * SETTINGS.TILE_SIZE, SETTINGS.TILE_SIZE, SETTINGS.TILE_SIZE, "#dedada");
+            let sprite = new DomSprite(t.x * SETTINGS.TILE_SIZE, t.y * SETTINGS.TILE_SIZE, SETTINGS.TILE_SIZE, SETTINGS.TILE_SIZE, color);
 
             let tile = new Tile(sprite);
             tile.friction = t.friction;

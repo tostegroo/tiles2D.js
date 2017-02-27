@@ -293,6 +293,16 @@ export default class Rectangle
     }
 
     /**
+     * Returns a angle between this rectangle and a given shape.
+     *
+     * @param {NGINT.Rectangle|NGINT.Circle} shape - The shape to compares.
+     */
+    angleBetween(shape)
+    {
+        return Math.atan2(this.center.y - shape.center.y, this.center.x - shape.center.x);
+    }
+
+    /**
      * Checks if a shape intersects with this rectangle.
      *
      * @param {NGINT.Rectangle|NGINT.Circle} shape - The shape to compares.

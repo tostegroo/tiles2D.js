@@ -38,6 +38,7 @@ export default class DomSprite extends DisplayObject
         this.width = width;
         this.height = height;
         this.color = color;
+        this._initialColor = color;
         this.alpha = 1;
 
         if(window._ngintcontainer)

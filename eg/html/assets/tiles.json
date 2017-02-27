@@ -44,7 +44,7 @@
              "10":
                 {
                  "bounciness":"0",
-                 "friction":"0,1"
+                 "friction":"0.1"
                 },
              "100":
                 {
@@ -74,7 +74,7 @@
              "105":
                 {
                  "bounciness":"0",
-                 "friction":"0,1"
+                 "friction":"0.1"
                 },
              "106":
                 {
@@ -99,7 +99,7 @@
              "11":
                 {
                  "bounciness":"0",
-                 "friction":"0,1"
+                 "friction":"0.1"
                 },
              "110":
                 {
@@ -144,7 +144,7 @@
              "118":
                 {
                  "bounciness":"0",
-                 "friction":"0,1"
+                 "friction":"0.1"
                 },
              "119":
                 {
@@ -154,7 +154,7 @@
              "12":
                 {
                  "bounciness":"0",
-                 "friction":"0,1"
+                 "friction":"0.1"
                 },
              "120":
                 {
@@ -219,7 +219,7 @@
              "131":
                 {
                  "bounciness":"0",
-                 "friction":"0,1"
+                 "friction":"0.1"
                 },
              "132":
                 {
@@ -264,7 +264,7 @@
              "14":
                 {
                  "bounciness":"0",
-                 "friction":"0,1"
+                 "friction":"0.1"
                 },
              "140":
                 {
@@ -289,7 +289,7 @@
              "144":
                 {
                  "bounciness":"0",
-                 "friction":"0,1"
+                 "friction":"0.1"
                 },
              "145":
                 {
@@ -319,7 +319,7 @@
              "15":
                 {
                  "bounciness":"0",
-                 "friction":"0,1"
+                 "friction":"0.1"
                 },
              "150":
                 {
@@ -479,7 +479,7 @@
              "27":
                 {
                  "bounciness":"0",
-                 "friction":"0,1"
+                 "friction":"0.1"
                 },
              "28":
                 {
@@ -554,7 +554,7 @@
              "40":
                 {
                  "bounciness":"0",
-                 "friction":"0,1"
+                 "friction":"0.1"
                 },
              "41":
                 {
@@ -624,7 +624,7 @@
              "53":
                 {
                  "bounciness":"0",
-                 "friction":"0,1"
+                 "friction":"0.1"
                 },
              "54":
                 {
@@ -694,7 +694,7 @@
              "66":
                 {
                  "bounciness":"0",
-                 "friction":"0,1"
+                 "friction":"0.1"
                 },
              "67":
                 {
@@ -764,7 +764,7 @@
              "79":
                 {
                  "bounciness":"0",
-                 "friction":"0,1"
+                 "friction":"0.1"
                 },
              "8":
                 {
@@ -824,7 +824,7 @@
              "9":
                 {
                  "bounciness":"0",
-                 "friction":"0,1"
+                 "friction":"0.1"
                 },
              "90":
                 {
@@ -839,7 +839,7 @@
              "92":
                 {
                  "bounciness":"0",
-                 "friction":"0,1"
+                 "friction":"0.1"
                 },
              "93":
                 {

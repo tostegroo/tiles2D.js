@@ -36,17 +36,15 @@ export class Ngint
         let player = new Player(domSprite);
         player.name = "p1";
 
-        console.log(player)
-
         let domSprite2 = new DomSprite(130, 20, 50, 80, "#990000");
         let player2 = new Player(domSprite2);
         player2.name = "p2";
         player2.mass = 80;
 
-        this.world = new World(new Environment(1.2, {x: 0, y: 0}));
-        //this.world = new World();
+        //this.world = new World(new Environment(1.2, {x: 0, y: 0}));
+        this.world = new World();
         this.world.addBody(player);
-        this.world.addBody(player2);
+        //this.world.addBody(player2);
 
         TiledLoader.loadTile('./assets/tiles.json', './assets/tiles.png', function(data)
         {
@@ -54,12 +52,12 @@ export class Ngint
             this.world.setTileList(tilelayer.tileList);
         }.bind(this));
 
-        //InputManager.addInput("ns", {keyboard:[KEYBOARD.D], onPress: this.next.bind(this)});
+        //InputManager.addInput("ns", {keyboard:[KEYBOARD.D], onPress: this.next.bind(this), oneHit: false});
 
         InputManager.addInput("right", {keyboard:[KEYBOARD.RIGHT], onPress: player.walkRight.bind(player), onRelease: player.stop.bind(player)});
         InputManager.addInput("left", {keyboard:[KEYBOARD.LEFT], onPress: player.walkLeft.bind(player), onRelease: player.stop.bind(player)});
         //InputManager.addInput("crouch", { keyboard:[KEYBOARD.DOWN], onPress: player.crouch.bind(player), onRelease: player.standUp.bind(player)});
-        //InputManager.addInput("jump", { keyboard:KEYBOARD.SPACE, onPress: player.jump.bind(player), onRelease: player.stopJump.bind(player), oneHit: true});
+        InputManager.addInput("jump", { keyboard:KEYBOARD.SPACE, onPress: player.jump.bind(player), onRelease: player.stopJump.bind(player), oneHit: true});
 
         InputManager.addInput("up", {keyboard:[KEYBOARD.UP], onPress: player.walkUp.bind(player), onRelease: player.stopy.bind(player)});
         InputManager.addInput("down", {keyboard:[KEYBOARD.DOWN], onPress: player.walkDown.bind(player), onRelease: player.stopy.bind(player)});

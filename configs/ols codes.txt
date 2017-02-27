@@ -35,3 +35,53 @@ if(overlap.value.y > overlap.value.x)
 
     using = 'x';
 }
+
+_calculateTileCollision(b)
+    {
+        let minTileX = Math.floor(b.shape.left / SETTINGS.TILE_SIZE);
+        let maxTileX = Math.ceil(b.shape.right / SETTINGS.TILE_SIZE);
+
+        let minTileY = Math.floor(b.shape.top / SETTINGS.TILE_SIZE);
+        let maxTileY = Math.ceil(b.shape.bottom / SETTINGS.TILE_SIZE);
+
+        let restitution = {x: 0, y: 0};
+        let x, y;
+        for (x = minTileX; x < maxTileX; x++)
+        {
+            for (y = minTileY; y < maxTileY; y++)
+            {
+                let tile = this.tileList[x+'-'+y];
+                if(tile)
+                {
+                    let angleBetween = b.shape.angleBetween(tile.shape);
+                    let intersectionData = b.shape.intersection(tile.shape);
+                    if(intersectionData)
+                    {
+                        ScreenConsole.log(
+                            "angle: "+b.velocity.angle,
+                            "cos: "+Math.cos(b.velocity.angle),
+                            "sin: "+Math.sin(b.velocity.angle)
+                        );
+
+                        restitution.x = b._bounciness.x[intersectionData.direction.x] + tile._bounciness.x[-intersectionData.direction.x];
+                        restitution.y = b._bounciness.y[intersectionData.direction.y] + tile._bounciness.y[-intersectionData.direction.y];
+
+                        if(intersectionData.height > intersectionData.width)
+                        {
+                            b._impulseDirection.y = intersectionData.direction.x;
+                            b.shape.x += intersectionData.width * intersectionData.direction.x;
+                            b.velocity.x = -b.velocity.x * restitution.x;
+                        }
+
+                        if(intersectionData.width > intersectionData.height)
+                        {
+                            b._impulseDirection.x = intersectionData.direction.y;
+                            b.shape.y += intersectionData.height * intersectionData.direction.y;
+                            b.velocity.y = -b.velocity.y * restitution.y;
+                        }
+                    }
+                    this.tileList[x+'-'+y].sprite.color = "#333";
+                }
+            }
+        }
+    }

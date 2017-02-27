@@ -102,8 +102,8 @@ export default class TiledLoader
                         x: imageX,
                         y: imageY
                     },
-                    friction: parseInt(friction),
-                    bounciness: parseInt(bounciness)
+                    friction: parseFloat(friction),
+                    bounciness: parseFloat(bounciness)
                 }
 
                 idx++;
