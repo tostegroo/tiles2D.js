@@ -1,3 +1,11 @@
+/**
+ * Keyboard keys Constants
+ *
+ * @static
+ * @constant
+ * @name KEYBOARD
+ * @memberof NGINT
+ */
 export const KEYBOARD =
 {
     CANCEL: 3,
@@ -115,4 +123,79 @@ export const KEYBOARD =
     CLOSE_BRACKET: 221,
     QUOTE: 222,
     META: 224
+}
+
+/**
+ * Gamepad buttons Constants
+ *
+ * @static
+ * @constant
+ * @name GAMEPAD
+ * @memberof NGINT
+ */
+export const GAMEPAD =
+{
+    //xbox
+    A: 0,
+    B: 1,
+    Y: 3,
+    BACK: 8,
+    LB: 4,
+    RB: 5,
+    LT: 6,
+    RT: 7,
+
+    //common
+    X: 2,
+    START: 9,
+    L_STICK: 10,
+    R_STICK: 11,
+    DPAD_UP: 12,
+    DPAD_DOWN: 13,
+    DPAD_LEFT: 14,
+    DPAD_RIGHT: 15,
+    VENDOR: 16,
+
+    L_AXIS: [0, 2],
+    R_AXIS: [2, 4],
+
+    //ps3/ps4
+    TRIANGLE: 0,
+    CIRCLE: 1,
+    SQUARE: 3,
+    SELECT: 8,
+    L1: 6,
+    l2: 4,
+    R1: 7,
+    R2: 5,
+
+    //generic
+    BUTTON_1: 0,
+    BUTTON_2: 2,
+    BUTTON_3: 3,
+    BUTTON_4: 4,
+    BUTTON_5: 5,
+    BUTTON_6: 6,
+    BUTTON_7: 7,
+    BUTTON_8: 8,
+    BUTTON_9: 9,
+    BUTTON_10: 10,
+    BUTTON_11: 11,
+    BUTTON_12: 12,
+    BUTTON_13: 13,
+    BUTTON_14: 14,
+    BUTTON_15: 15
+}
+
+/**
+ * GAMEPADIDs Constants
+ *
+ * @static
+ * @constant
+ * @name GAMEPADID
+ * @memberof NGINT
+ */
+export const GAMEPADID = 
+{
+    xbox360: 0x45E
 }

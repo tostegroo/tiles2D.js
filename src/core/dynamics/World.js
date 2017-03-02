@@ -68,7 +68,7 @@ export default class World
             return
 
         let index = environment._id;
-        if (index>0 && index<this.environmentCount)
+        if (index>-1 && index<this.environmentCount)
         {
             environmentList.splice(index, 1);
             this.environmentCount--;
@@ -90,7 +90,7 @@ export default class World
             return
 
         let index = body._id;
-        if (index>0 && index<this.bodyCount)
+        if (index>-1 && index<this.bodyCount)
         {
             this.bodyList.splice(index, 1);
             this.bodyCount--;

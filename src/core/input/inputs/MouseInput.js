@@ -17,10 +17,14 @@ export default class MouseInput
         document.addEventListener("DOMMouseScroll", this.onWheel, false);
     }
 
+    update(item)
+    {
+
+    }
+
     onWheel(e)
     {
         var e = window.event || e;
 	    this.wheel = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
     }
-
 }

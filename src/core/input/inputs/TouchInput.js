@@ -11,4 +11,9 @@ export default class TouchInput
     {
 
     }
+
+    update(item)
+    {
+
+    }
 }

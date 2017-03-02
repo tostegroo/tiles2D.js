@@ -4,6 +4,7 @@
 import DomSprite from './core/display/sprites/DomSprite';
 import InputManager from './core/input/InputManager';
 import { KEYBOARD } from './core/input/InputConstants';
+import { GAMEPAD } from './core/input/InputConstants';
 import Player from './core/players/Player';
 import World from './core/dynamics/World';
 import Environment from './core/dynamics/Environment';
@@ -26,7 +27,7 @@ export class Ngint
 {
     constructor(container = null)
     {
-        this._loopID = false;
+        this._requestAnimation = false;
         window._ngintcontainer = container;
 
         //let floorSprite = new DomSprite(0, 800, 1920, 80, "#dedada");
@@ -54,13 +55,40 @@ export class Ngint
 
         //InputManager.addInput("ns", {keyboard:[KEYBOARD.D], onPress: this.next.bind(this), oneHit: false});
 
-        InputManager.addInput("right", {keyboard:[KEYBOARD.RIGHT], onPress: player.walkRight.bind(player), onRelease: player.stop.bind(player)});
-        InputManager.addInput("left", {keyboard:[KEYBOARD.LEFT], onPress: player.walkLeft.bind(player), onRelease: player.stop.bind(player)});
-        //InputManager.addInput("crouch", { keyboard:[KEYBOARD.DOWN], onPress: player.crouch.bind(player), onRelease: player.standUp.bind(player)});
-        InputManager.addInput("jump", { keyboard:KEYBOARD.SPACE, onPress: player.jump.bind(player), onRelease: player.stopJump.bind(player), oneHit: true});
+        InputManager.addInput(
+            "right",
+            {
+                keyboard: [KEYBOARD.RIGHT],
+                gamepad: 17,
+                onPress: player.walkRight.bind(player),
+                onRelease: player.stop.bind(player)
+            }
+        );
 
-        InputManager.addInput("up", {keyboard:[KEYBOARD.UP], onPress: player.walkUp.bind(player), onRelease: player.stopy.bind(player)});
-        InputManager.addInput("down", {keyboard:[KEYBOARD.DOWN], onPress: player.walkDown.bind(player), onRelease: player.stopy.bind(player)});
+        InputManager.addInput(
+            "left",
+            {
+                keyboard: [KEYBOARD.LEFT],
+                gamepad: 18,
+                onPress: player.walkLeft.bind(player),
+                onRelease: player.stop.bind(player)
+            }
+        );
+
+        //InputManager.addInput("crouch", { keyboard:[KEYBOARD.DOWN], onPress: player.crouch.bind(player), onRelease: player.standUp.bind(player)});
+        InputManager.addInput(
+            "jump",
+            {
+                keyboard: KEYBOARD.SPACE,
+                gamepad: GAMEPAD.A,
+                onPress: player.jump.bind(player),
+                onRelease: player.stopJump.bind(player),
+                oneHit: true
+            }
+        );
+
+        //InputManager.addInput("up", {keyboard:[KEYBOARD.UP], onPress: player.walkUp.bind(player), onRelease: player.stopy.bind(player)});
+        //InputManager.addInput("down", {keyboard:[KEYBOARD.DOWN], onPress: player.walkDown.bind(player), onRelease: player.stopy.bind(player)});
 
         ScreenConsole.add(1920-300, 0, 300, 150);
         this.update();
@@ -70,10 +98,10 @@ export class Ngint
 
     stop()
     {
-        if(this._loopID)
+        if(this._requestAnimation)
         {
-            window.cancelAnimationFrame(this._loopID);
-            this._loopID = false;
+            window.cancelAnimationFrame(this._requestAnimation);
+            this._requestAnimation = null;
         }
     }
 
@@ -90,6 +118,6 @@ export class Ngint
         InputManager.update();
         this.world.update(deltatime);
 
-        this._loopID = window.requestAnimationFrame(this.update.bind(this));
+        this._requestAnimation = window.requestAnimationFrame(this.update.bind(this));
     }
 }

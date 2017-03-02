@@ -25,7 +25,7 @@ export default class Body
          * @private
          * @member {number}
          */
-        this._id = 0;
+        this._id = -1;
 
         /**
          * The name of the body object, can be used for identify the instance
