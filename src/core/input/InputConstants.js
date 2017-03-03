@@ -156,8 +156,21 @@ export const GAMEPAD =
     DPAD_RIGHT: 15,
     VENDOR: 16,
 
-    L_AXIS: [0, 2],
-    R_AXIS: [2, 4],
+    L_AXIS: [0, 1],
+    L_AXIS_X: [0],
+    L_AXIS_X_LEFT: [0][-1],
+    L_AXIS_X_RIGHT: [0][1],
+    L_AXIS_Y: [1],
+    L_AXIS_Y_TOP: [1][-1],
+    L_AXIS_Y_BOTTON: [1][1],
+
+    R_AXIS: [2, 3],
+    R_AXIS_X: [2],
+    R_AXIS_X_LEFT: [0][-1],
+    R_AXIS_X_RIGHT: [0][1],
+    R_AXIS_Y: [3],
+    R_AXIS_Y_TOP: [1][-1],
+    R_AXIS_Y_BOTTON: [1][1],
 
     //ps3/ps4
     TRIANGLE: 0,
@@ -184,7 +197,8 @@ export const GAMEPAD =
     BUTTON_12: 12,
     BUTTON_13: 13,
     BUTTON_14: 14,
-    BUTTON_15: 15
+    BUTTON_15: 15,
+    BUTTON_16: 16
 }
 
 /**
@@ -195,7 +209,7 @@ export const GAMEPAD =
  * @name GAMEPADID
  * @memberof NGINT
  */
-export const GAMEPADID = 
+export const GAMEPADID =
 {
     xbox360: 0x45E
 }

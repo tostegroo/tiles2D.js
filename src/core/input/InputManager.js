@@ -27,7 +27,8 @@ export default class InputManager
             inputs.name = name;
             inputs.canHit = true;
             inputs.pressed = false;
-
+            inputs.useasDPad = false;
+            
             if(inputs.keyboard!=undefined)
             {
                 if(!keyboard)

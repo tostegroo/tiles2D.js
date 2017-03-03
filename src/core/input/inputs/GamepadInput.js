@@ -17,8 +17,7 @@ export default class GamepadInput
             this.hasGamepadSupport = true;
             this.getGamepads = 'webkitGetGamepads';
         }
-
-        this.useStickDPad = false;
+        
         this.threshold = 0.3;
         this.onGamepadConnected = null;
         this.onGamepadDisconnected = null;
@@ -53,6 +52,8 @@ export default class GamepadInput
         return button;
     }
 
+
+
     update(item)
     {
         if(this.hasGamepadSupport)
@@ -85,6 +86,8 @@ export default class GamepadInput
                         item.canHit = true;
                         item.pressed = false;
                     }
+
+                    //console.log(gp);
                 }
             }
         }

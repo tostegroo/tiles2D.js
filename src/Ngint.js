@@ -59,7 +59,7 @@ export class Ngint
             "right",
             {
                 keyboard: [KEYBOARD.RIGHT],
-                gamepad: 17,
+                gamepad: [GAMEPAD.L_AXIS_X_RIGHT, GAMEPAD.DPAD_RIGHT],
                 onPress: player.walkRight.bind(player),
                 onRelease: player.stop.bind(player)
             }
@@ -69,7 +69,7 @@ export class Ngint
             "left",
             {
                 keyboard: [KEYBOARD.LEFT],
-                gamepad: 18,
+                gamepad: [GAMEPAD.L_AXIS_X_LEFT, GAMEPAD.DPAD_LEFT],
                 onPress: player.walkLeft.bind(player),
                 onRelease: player.stop.bind(player)
             }

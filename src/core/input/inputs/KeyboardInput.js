@@ -33,13 +33,13 @@ export default class KeyboardInput
                 }
 
                 if(item.onPress)
-                    item.onPress();
+                    item.onPress(1);
             }
 
             if(this.key[char] && !this.key[char].state)
             {
                 if(item.onRelease)
-                    item.onRelease();
+                    item.onRelease(0);
 
                 item.canHit = true;
                 this.key[char] = false;
