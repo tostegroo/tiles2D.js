@@ -5,15 +5,68 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <meta name="robots" content="index, follow" />
         <meta property="article:author" content="Fabio Toste" />
-        <meta name="description" content="E.g. for Ngint">
-        <meta name="keywords" content="ngint, 2d, game engine, engine, game, indie">
+        <meta name="description" content="E.g. for TILES2D">
+        <meta name="keywords" content="tiles2D, 2d, game engine, engine, game, indie">
         <link rel="stylesheet" href="./css/style.css">
     </head>
     <body>
-        <section id="ngint-container" class="h-container" style="position: absolute; left: 200px;"></section>
+        <section id="tiles2D-container" class="h-container" style="position: absolute; left: 200px;"></section>
     </body>
-    <script src="../../dist/js/ngin-t.js"></script>
+    <script src="../../dist/js/tiles2D.js"></script>
     <script>
-        var ngint = new NGINT.Ngint(document.getElementById('ngint-container'));
+
+        TILES2D.ScreenConsole.add(1920-300, 0, 300, 150);
+
+        //var world = new World(new TILES2D.Environment(1.2, {x: 0, y: 0}));
+        var world = new TILES2D.World();
+
+        TILES2D.create(document.getElementById('tiles2D-container'), world);
+
+        var player = new TILES2D.Player(new TILES2D.DomSprite(80, 20, 50, 80, "#000"));
+        var player2 = new TILES2D.Player(new TILES2D.DomSprite(130, 20, 50, 80, "#990000"));
+        world.addBody(player);
+        //world.addBody(player2);
+
+        TILES2D.TiledLoader.load('./assets/tiles.json', './assets/tiles.png', function(data)
+        {
+            var tilelayer = new TILES2D.TileLayer(data);
+            world.setTileList(tilelayer.tileList);
+        });
+
+        //TILES2D.InputManager.addInput("ns", {keyboard:[KEYBOARD.D], onPress: this.next.bind(this), oneHit: false});
+        TILES2D.InputManager.addInput(
+            "right",
+            {
+                keyboard: [TILES2D.KEYBOARD.RIGHT],
+                gamepad: [TILES2D.GAMEPAD.L_AXIS_X_RIGHT, TILES2D.GAMEPAD.DPAD_RIGHT],
+                onPress: player.walkRight.bind(player),
+                onRelease: player.stop.bind(player)
+            }
+        );
+
+        TILES2D.InputManager.addInput(
+            "left",
+            {
+                keyboard: [TILES2D.KEYBOARD.LEFT],
+                gamepad: [TILES2D.GAMEPAD.L_AXIS_X_LEFT, TILES2D.GAMEPAD.DPAD_LEFT],
+                onPress: player.walkLeft.bind(player),
+                onRelease: player.stop.bind(player)
+            }
+        );
+
+        //TILES2D.InputManager.addInput("crouch", { keyboard:[KEYBOARD.DOWN], onPress: player.crouch.bind(player), onRelease: player.standUp.bind(player)});
+        TILES2D.InputManager.addInput(
+            "jump",
+            {
+                keyboard: TILES2D.KEYBOARD.SPACE,
+                gamepad: TILES2D.GAMEPAD.A,
+                onPress: player.jump.bind(player),
+                onRelease: player.stopJump.bind(player),
+                oneHit: true
+            }
+        );
+
+        //TILES2D.InputManager.addInput("up", {keyboard:[KEYBOARD.UP], onPress: player.walkUp.bind(player), onRelease: player.stopy.bind(player)});
+        //TILES2D.InputManager.addInput("down", {keyboard:[KEYBOARD.DOWN], onPress: player.walkDown.bind(player), onRelease: player.stopy.bind(player)});
     </script>
 </html>

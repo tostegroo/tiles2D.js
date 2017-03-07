@@ -4,7 +4,7 @@
  * @static
  * @constant
  * @name AXIS
- * @memberof NGINT
+ * @memberof TILES2D
  */
 export const DRAG_COEFFICIENT =
 {
@@ -29,7 +29,7 @@ export const DRAG_COEFFICIENT =
  * @static
  * @constant
  * @name AXIS
- * @memberof NGINT
+ * @memberof TILES2D
  */
 export const MATERIAL_DENSITY =
 {
@@ -94,7 +94,7 @@ export const MATERIAL_DENSITY =
  * @static
  * @constant
  * @name AXIS
- * @memberof NGINT
+ * @memberof TILES2D
  */
 export const ENVIRONMENT_TYPE =
 {

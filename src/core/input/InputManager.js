@@ -7,7 +7,7 @@ import TouchInput from './inputs/TouchInput';
   * The InputManager object is the base class of all input methods tha can be used
   *
   * @class
-  * @memberof NGINT
+  * @memberof TILES2D
   * @author Fabio Toste
 */
 let inputLength = 0;
@@ -28,7 +28,7 @@ export default class InputManager
             inputs.canHit = true;
             inputs.pressed = false;
             inputs.useasDPad = false;
-            
+
             if(inputs.keyboard!=undefined)
             {
                 if(!keyboard)

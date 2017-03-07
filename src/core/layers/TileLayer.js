@@ -6,7 +6,7 @@ import SETTINGS from '../settings';
   * The TileLayer is the layer object to create level from tiled
   *
   * @class
-  * @memberof NGINT
+  * @memberof TILES2D
   * @author Fabio Toste
 */
 export default class TileLayer

@@ -7,7 +7,7 @@ import { ENVIRONMENT_TYPE } from '../dynamics/dynamicConstants';
   * The Player class can be used for a playable character
   *
   * @class
-  * @memberof NGINT
+  * @memberof TILES2D
   * @author Fabio Toste
 */
 export default class Player extends Body
@@ -33,7 +33,7 @@ export default class Player extends Body
         this.dragCoefficient = DRAG_COEFFICIENT.human;
         this.mass = 80;
         this.friction = 0.5;
-        this.bounciness = 0;
+        this.bounciness = 0.9;
     }
 
     walkMove(value)

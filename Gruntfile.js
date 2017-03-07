@@ -31,7 +31,7 @@ module.exports = function(grunt)
         rollup: {
             options: {
                 format: 'umd',
-                moduleName: 'NGINT',
+                moduleName: 'TILES2D',
                 plugins: function() {
                     return [babel( {
                             exclude: './node_modules/**',
@@ -42,7 +42,7 @@ module.exports = function(grunt)
             },
             files: {
                 'dest': './dist/js/<%= pkg.name %>.js',
-                'src' : './src/Ngint.js'
+                'src' : './src/tiles2D.js'
             }
         },
         uglify:

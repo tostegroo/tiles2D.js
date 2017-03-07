@@ -1,10 +1,10 @@
-import { KEYBOARD } from '../InputConstants';
+import { KEYBOARD } from '../inputConstants';
 
 /**
   * The KeyboardInput is used to manage the keyboard events
   *
   * @class
-  * @memberof NGINT
+  * @memberof TILES2D
   * @author Fabio Toste
 */
 export default class KeyboardInput

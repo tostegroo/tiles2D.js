@@ -6,17 +6,17 @@ import Environment from './Environment';
 import ScreenConsole from '../../debug/ScreenConsole'
 
 /**
-  * The World object is the main object of NGINT, is used to calculate all interactions and physics
+  * The World object is the main object of TILES2D, is used to calculate all interactions and physics
   *
   * @class
-  * @memberof NGINT
+  * @memberof TILES2D
   * @author Fabio Toste
 */
 export default class World
 {
     /**
      *
-     * @param {NGINT.Environment} environment - The main environment of the world
+     * @param {TILES2D.Environment} environment - The main environment of the world
      *
      */
     constructor(environment = new Environment(MATERIAL_DENSITY.air, {x:0, y:9.81}))

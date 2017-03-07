@@ -6,7 +6,7 @@ import { AXIS } from '../../constants';
  * point (x, y) and by its width and its height.
  *
  * @class
- * @memberof NGINT
+ * @memberof TILES2D
  */
 export default class Rectangle
 {
@@ -47,8 +47,8 @@ export default class Rectangle
          *
          * @member {number}
          * @readOnly
-         * @default NGINT.SHAPES.RECT
-         * @see NGINT.SHAPES
+         * @default TILES2D.SHAPES.RECT
+         * @see TILES2D.SHAPES
          */
         this.type = SHAPES.RECT;
 
@@ -172,7 +172,7 @@ export default class Rectangle
     /**
      * Creates a clone of this Rectangle
      *
-     * @return {NGINT.Rectangle} a copy of the rectangle
+     * @return {TILES2D.Rectangle} a copy of the rectangle
      */
     clone()
     {
@@ -182,8 +182,8 @@ export default class Rectangle
     /**
      * Copies another rectangle to this one.
      *
-     * @param {NGINT.Rectangle} rectangle - The rectangle to copy.
-     * @return {NGINT.Rectangle} Returns itself.
+     * @param {TILES2D.Rectangle} rectangle - The rectangle to copy.
+     * @return {TILES2D.Rectangle} Returns itself.
      */
     copy(rectangle)
     {
@@ -237,7 +237,7 @@ export default class Rectangle
     /**
      * Fits this rectangle around the passed one.
      *
-     * @param {NGINT.Rectangle} rectangle - The rectangle to fit.
+     * @param {TILES2D.Rectangle} rectangle - The rectangle to fit.
      */
     fit(rectangle)
     {
@@ -277,7 +277,7 @@ export default class Rectangle
     /**
      * Enlarges this rectangle to include the passed rectangle.
      *
-     * @param {NGINT.Rectangle} rectangle - The rectangle to include.
+     * @param {TILES2D.Rectangle} rectangle - The rectangle to include.
      */
     enlarge(rectangle)
     {
@@ -295,7 +295,7 @@ export default class Rectangle
     /**
      * Returns a angle between this rectangle and a given shape.
      *
-     * @param {NGINT.Rectangle|NGINT.Circle} shape - The shape to compares.
+     * @param {TILES2D.Rectangle|TILES2D.Circle} shape - The shape to compares.
      */
     angleBetween(shape)
     {
@@ -305,8 +305,8 @@ export default class Rectangle
     /**
      * Checks if a shape intersects with this rectangle.
      *
-     * @param {NGINT.Rectangle|NGINT.Circle} shape - The shape to compares.
-     * @param {NGINT.AXIS} axis - Optional axis, if you wanna know the intersection in one axis only.
+     * @param {TILES2D.Rectangle|TILES2D.Circle} shape - The shape to compares.
+     * @param {TILES2D.AXIS} axis - Optional axis, if you wanna know the intersection in one axis only.
      */
     intersects(shape, axis = "")
     {
@@ -325,7 +325,7 @@ export default class Rectangle
     /**
      * Checks if a shape intersects with this rectangle.
      *
-     * @param {NGINT.Rectangle|NGINT.Circle} shape - The shape to compares.
+     * @param {TILES2D.Rectangle|TILES2D.Circle} shape - The shape to compares.
      */
     intersection(shape)
     {

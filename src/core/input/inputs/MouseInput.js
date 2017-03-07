@@ -2,7 +2,7 @@
   * The MouseInput object is used to manage the mouse events
   *
   * @class
-  * @memberof NGINT
+  * @memberof TILES2D
   * @author Fabio Toste
 */
 export default class MouseInput

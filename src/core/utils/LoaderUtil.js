@@ -2,7 +2,7 @@
  * A Loader util class with a some math functions
  *
  * @class
- * @memberof NGINT
+ * @memberof TILES2D
  */
 export default class LoaderUtil
 {

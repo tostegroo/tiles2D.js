@@ -2,7 +2,7 @@
   * The ScreenConsole object iis used to debug variables on screen
   *
   * @class
-  * @memberof NGINT
+  * @memberof TILES2D
   * @author Fabio Toste
 */
 let screenLogElement = null

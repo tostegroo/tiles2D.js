@@ -4,13 +4,13 @@ import Body from '../dynamics/Body';
   * The Tile object is the basic object for build a scene, is a kind of dynamic body, but much more simple
   *
   * @class
-  * @memberof NGINT
+  * @memberof TILES2D
   * @author Fabio Toste
 */
 export default class Tile extends Body
 {
     /**
-     * @param {NGINT.Sprite} sprite - The sprite to apply body transformations
+     * @param {TILES2D.Sprite} sprite - The sprite to apply body transformations
      *
      */
     constructor(sprite)

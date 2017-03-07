@@ -4,7 +4,7 @@ import { ENVIRONMENT_TYPE } from './dynamicConstants';
   * The Environment object is used for set the enviroment of part or all the Word
   *
   * @class
-  * @memberof NGINT
+  * @memberof TILES2D
   * @author Fabio Toste
 */
 export default class Environment

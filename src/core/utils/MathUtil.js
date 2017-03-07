@@ -5,7 +5,7 @@ import Vector2 from '../geom/Vector2';
  *
  * @static
  * @constant
- * @memberof NGINT
+ * @memberof TILES2D
  * @type {number}
  */
 export const PI_2 = Math.PI * 2;
@@ -15,7 +15,7 @@ export const PI_2 = Math.PI * 2;
  *
  * @static
  * @constant
- * @memberof NGINT
+ * @memberof TILES2D
  * @type {number}
  */
 export const RAD_TO_DEG = 180 / Math.PI;
@@ -25,7 +25,7 @@ export const RAD_TO_DEG = 180 / Math.PI;
  *
  * @static
  * @constant
- * @memberof NGINT
+ * @memberof TILES2D
  * @type {number}
  */
 export const DEG_TO_RAD = Math.PI / 180;
@@ -34,7 +34,7 @@ export const DEG_TO_RAD = Math.PI / 180;
  * A Math Helper class with a some math functions
  *
  * @class
- * @memberof NGINT
+ * @memberof TILES2D
  */
 export default class MathUtil
 {

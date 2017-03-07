@@ -3,11 +3,11 @@
  *
  * @static
  * @constant
- * @memberof NGINT
+ * @memberof TILES2D
  * @name VERSION
  * @type {string}
  */
-export const VERSION = __VERSION__;
+export const VERSION = '0.0.1';
 
 /**
  * Constants that identify axis, mainly to prevent `instanceof` calls.
@@ -15,7 +15,7 @@ export const VERSION = __VERSION__;
  * @static
  * @constant
  * @name AXIS
- * @memberof NGINT
+ * @memberof TILES2D
  * @type {object}
  * @property {number} X the x axis
  * @property {number} Y the y axis
@@ -32,7 +32,7 @@ export const AXIS =
  * @static
  * @constant
  * @name SHAPES
- * @memberof NGINT
+ * @memberof TILES2D
  * @type {object}
  * @property {number} POLY Polygon
  * @property {number} RECT Rectangle
@@ -54,7 +54,7 @@ export const SHAPES =
  *
  * @static
  * @constant
- * @memberof NGINT
+ * @memberof TILES2D
  * @type {RegExp|string}
  * @example `image.png`
  */
@@ -67,7 +67,7 @@ export const URL_FILE_EXTENSION = /\.(\w{3,4})(?:$|\?|#)/i;
  * @static
  * @constant
  * @name DATA_URI
- * @memberof NGINT
+ * @memberof TILES2D
  * @type {RegExp|string}
  * @example data:image/png;base64
  */
@@ -79,7 +79,7 @@ export const DATA_URI = /^\s*data:(?:([\w-]+)\/([\w+.-]+))?(?:;(charset=[\w-]+|b
  * @static
  * @constant
  * @name SVG_SIZE
- * @memberof NGINT
+ * @memberof TILES2D
  * @type {RegExp|string}
  * @example &lt;svg width="100" height="100"&gt;&lt;/svg&gt;
  */

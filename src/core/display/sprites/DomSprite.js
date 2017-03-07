@@ -1,10 +1,10 @@
 import DisplayObject from '../DisplayObject';
 
 /**
-  * The Sprite to use with html div elements in dom NGINT
+  * The Sprite to use with html div elements in dom TILES2D
   *
   * @class
-  * @memberof NGINT
+  * @memberof TILES2D
   * @author Fabio Toste
 */
 export default class DomSprite extends DisplayObject
@@ -41,8 +41,8 @@ export default class DomSprite extends DisplayObject
         this._initialColor = color;
         this.alpha = 1;
 
-        if(window._ngintcontainer)
-            window._ngintcontainer.appendChild(this.domElement);
+        if(window._tiles2dcontainer)
+            window._tiles2dcontainer.appendChild(this.domElement);
     }
 
     addChild(domElement)

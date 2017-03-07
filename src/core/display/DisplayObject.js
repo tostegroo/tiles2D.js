@@ -1,8 +1,8 @@
 /**
-  * The DisplayObject is the base class of any graphic instance in NGINT
+  * The DisplayObject is the base class of any graphic instance in TILES2D
   *
   * @class
-  * @memberof NGINT
+  * @memberof TILES2D
   * @author Fabio Toste
 */
 export default class DisplayObject

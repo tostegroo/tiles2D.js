@@ -4,7 +4,7 @@
  * @static
  * @constant
  * @name KEYBOARD
- * @memberof NGINT
+ * @memberof TILES2D
  */
 export const KEYBOARD =
 {
@@ -131,7 +131,7 @@ export const KEYBOARD =
  * @static
  * @constant
  * @name GAMEPAD
- * @memberof NGINT
+ * @memberof TILES2D
  */
 export const GAMEPAD =
 {
@@ -207,7 +207,7 @@ export const GAMEPAD =
  * @static
  * @constant
  * @name GAMEPADID
- * @memberof NGINT
+ * @memberof TILES2D
  */
 export const GAMEPADID =
 {

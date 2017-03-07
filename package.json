@@ -1,5 +1,5 @@
 {
-  "name": "ngin-t",
+  "name": "tiles2D",
   "version": "0.0.1",
   "description": "A basic 2d platform game engine for html5|Canvas",
   "keywords": [
@@ -9,23 +9,23 @@
     "2d",
     "platform"
   ],
-  "homepage": "https://www.ngin-t.com/",
+  "homepage": "https://www.tiles2D.com/",
   "author": "Fabio Toste <tostegroo@gmail.com> (http://fabiottoste.com)",
   "contributors": [],
   "main": "Gruntfile.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tostegroo/ngin-t"
+    "url": "https://github.com/tostegroo/tiles2D"
   },
   "scripts": {},
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/aichaos/ngin-t/blob/master/LICENSE"
+      "url": "https://github.com/aichaos/tiles2D/blob/master/LICENSE"
     }
   ],
   "bugs": {
-    "url": "https://github.com/aichaos/ngin-t/issues",
+    "url": "https://github.com/aichaos/tiles2D/issues",
     "email": "tostegroo@gmail.com"
   },
   "dependencies": {},

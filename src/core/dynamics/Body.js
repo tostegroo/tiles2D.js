@@ -7,17 +7,17 @@ import { AXIS } from '../constants';
   * The Body object is the base for all dynamics objects, including the player, npcs, and tiles
   *
   * @class
-  * @memberof NGINT
+  * @memberof TILES2D
   * @author Fabio Toste
 */
 export default class Body
 {
     /**
      *
-     * @param {NGINT.Sprite} sprite - The sprite to apply body transformations
+     * @param {TILES2D.Sprite} sprite - The sprite to apply body transformations
      *
      */
-    constructor(sprite, shape = new Rectangle())
+    constructor(sprite = null, shape = new Rectangle())
     {
         /**
          * The id of the body object, can be used for identify the instance or for indexing

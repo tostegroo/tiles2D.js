@@ -1,5 +1,5 @@
 /**
- * @namespace NGINT.settings
+ * @namespace TILES2D.settings
  */
 export default
 {
@@ -7,7 +7,7 @@ export default
      * Default Environment force to use in environments
      *
      * @static
-     * @memberof NGINT.settings
+     * @memberof TILES2D.settings
      * @type {object}
      * @default Object {x: 0, y: 0}
      */
@@ -21,17 +21,17 @@ export default
      * The unit used for convert meters to pixels
      *
      * @static
-     * @memberof NGINT.settings
+     * @memberof TILES2D.settings
      * @type {number}
      * @default 70
      */
     PIXEL_METER_UNIT: 70,
 
     /**
-     * The size of the tiles (used by all tiles in the NGINT)
+     * The size of the tiles (used by all tiles in the TILES2D)
      *
      * @static
-     * @memberof NGINT.settings
+     * @memberof TILES2D.settings
      * @type {number}
      * @default 50
      */
@@ -41,7 +41,7 @@ export default
      * The time step to calculate the physics
      *
      * @static
-     * @memberof NGINT.settings
+     * @memberof TILES2D.settings
      * @type {number}
      * @default 1 / 60
      */
@@ -51,7 +51,7 @@ export default
      * The bounds to compute interactions and physics
      *
      * @static
-     * @memberof NGINT.settings
+     * @memberof TILES2D.settings
      * @type {object}
      * @default {x: 0, y: 0 width: 100000, height: 100000}
      */
@@ -67,7 +67,7 @@ export default
      * The variable to set the state (Paused/Running) of the engine
      *
      * @static
-     * @memberof NGINT.settings
+     * @memberof TILES2D.settings
      * @type {boolean}
      * @default false
      */

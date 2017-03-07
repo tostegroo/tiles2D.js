@@ -4,16 +4,16 @@ import LoaderUtil from '../utils/LoaderUtil';
   * The TiledLoader is used to load json and js files from tiled app
   *
   * @class
-  * @memberof NGINT
+  * @memberof TILES2D
   * @author Fabio Toste
 */
 export default class TiledLoader
 {
     /**
-     * @param {NGINT.Sprite} url - The url path to the json file
+     * @param {TILES2D.Sprite} url - The url path to the json file
      *
      */
-    static loadTile(datafile, imagefile, callback)
+    static load(datafile, imagefile, callback)
     {
         let datamatch = /\.(jso?n?)[?]?/ig.exec(datafile);
         if(datamatch!=null && datamatch.length>1)
@@ -42,7 +42,7 @@ export default class TiledLoader
             callback(false);
     }
 
-    static loadTileData(datafile, callback)
+    static loadData(datafile, callback)
     {
         let datamatch = /\.(jso?n?)[?]?/ig.exec(datafile);
         if(datamatch!=null && datamatch.length>1)

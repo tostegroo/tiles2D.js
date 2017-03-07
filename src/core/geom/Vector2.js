@@ -3,7 +3,7 @@
  * where x represents the horizontal axis and y represents the vertical axis.
  *
  * @class
- * @memberof NGINT
+ * @memberof TILES2D
  * @author Fabio Toste
  */
 export default class Vector2
@@ -33,7 +33,7 @@ export default class Vector2
     /**
      * Creates a clone of this vector
      *
-     * @return {NGINT.Vector2} a copy of the vector
+     * @return {TILES2D.Vector2} a copy of the vector
      */
     clone()
     {
@@ -43,7 +43,7 @@ export default class Vector2
     /**
      * Copies x and y from the given vector
      *
-     * @param {NGINT.Vector2} v - The vector to copy.
+     * @param {TILES2D.Vector2} v - The vector to copy.
      */
     copy(v)
     {
@@ -53,7 +53,7 @@ export default class Vector2
     /**
      * Returns true if the given vector is equal to this vector
      *
-     * @param {NGINT.Vector2} v - The vector to check
+     * @param {TILES2D.Vector2} v - The vector to check
      *
      * @returns {boolean} Whether the given vector equal to this vector
      */
@@ -118,7 +118,7 @@ export default class Vector2
     /**
      * Sets the vector x and y positions to zero
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     zero()
     {
@@ -130,9 +130,9 @@ export default class Vector2
     /**
      * Adds to the vector the x and y position of a given vector
      *
-     * @param {NGINT.Vector2} v - The vector to add
+     * @param {TILES2D.Vector2} v - The vector to add
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     add(v)
     {
@@ -146,7 +146,7 @@ export default class Vector2
      *
      * @param {number} n - The number to add
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     addScalar(n)
     {
@@ -158,9 +158,9 @@ export default class Vector2
     /**
      * Subtracts from the vector the x and y position of a given vector
      *
-     * @param {NGINT.Vector2} v - The vector to subtract
+     * @param {TILES2D.Vector2} v - The vector to subtract
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     subtract(v)
     {
@@ -174,7 +174,7 @@ export default class Vector2
      *
      * @param {number} n - The number to subtract
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     subtractScalar(n)
     {
@@ -186,9 +186,9 @@ export default class Vector2
     /**
      * Multiplies to the vector the x and y position of a given vector
      *
-     * @param {NGINT.Vector2} v - The vector to multiply
+     * @param {TILES2D.Vector2} v - The vector to multiply
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     multiply(v)
     {
@@ -202,7 +202,7 @@ export default class Vector2
      *
      * @param {number} n - The number to multiply
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     multiplyScalar(n)
     {
@@ -214,9 +214,9 @@ export default class Vector2
     /**
      * Divides the vector for the x and y position of a given vector
      *
-     * @param {NGINT.Vector2} v - The vector to divide
+     * @param {TILES2D.Vector2} v - The vector to divide
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     divide(v)
     {
@@ -230,7 +230,7 @@ export default class Vector2
      *
      * @param {number} n - The number to divide
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     divideScalar(n)
     {
@@ -242,10 +242,10 @@ export default class Vector2
     /**
      * Clamps this vector's length to given min and max values
      *
-     * @param {NGINT.Vector2} vmin - the min (vector2) value to clamp
-     * @param {NGINT.Vector2} vmax - the max (vector2) value to clamp
+     * @param {TILES2D.Vector2} vmin - the min (vector2) value to clamp
+     * @param {TILES2D.Vector2} vmax - the max (vector2) value to clamp
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     clamp(vmin, vmax)
     {
@@ -257,7 +257,7 @@ export default class Vector2
     /**
      * Floors the x and y positions of the vector
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     floor()
     {
@@ -269,7 +269,7 @@ export default class Vector2
     /**
      * Ceils the x and y positions of the vector
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
 	ceil()
     {
@@ -281,7 +281,7 @@ export default class Vector2
     /**
      * Rounds the x and y positions of the vector
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
 	round()
     {
@@ -293,7 +293,7 @@ export default class Vector2
     /**
      * Makes the x and y positions of the vector negative
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
 	negate()
     {
@@ -305,9 +305,9 @@ export default class Vector2
     /**
      * Gives to a given vector the x and y positions of this vector
      *
-     * @param {NGINT.Vector2} v - The vector to give the positions
+     * @param {TILES2D.Vector2} v - The vector to give the positions
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     equals(v)
     {
@@ -321,7 +321,7 @@ export default class Vector2
      *
      * @param {number} n - The angle (radians) to set
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     set angle(n = 0)
     {
@@ -346,7 +346,7 @@ export default class Vector2
      *
      * @param {number} n - The angle (degrees) to set
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     set angleDeg(n = 0)
     {
@@ -370,7 +370,7 @@ export default class Vector2
      *
      * @param {number} n - The angle (radians) to rotate
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     rotate(n = 0)
     {
@@ -386,7 +386,7 @@ export default class Vector2
      *
      * @param {number} n - The angle (degrees) to rotate
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     rotateDeg(n)
     {
@@ -400,7 +400,7 @@ export default class Vector2
      *
      * @param {number} n - A scale value to normalize (defaults to 1.0)
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     normalize(n = 1.0)
     {
@@ -415,7 +415,7 @@ export default class Vector2
      *
      * @param {number} n - The new length of the vector
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     set length(n)
     {
@@ -438,7 +438,7 @@ export default class Vector2
     /**
      * Makes a dot product operation between this vector and a given vector
      *
-     * @param {NGINT.Vector2} v - The vector to make the dot operation
+     * @param {TILES2D.Vector2} v - The vector to make the dot operation
      *
      * @return {number} the result of dot operation
      */
@@ -450,7 +450,7 @@ export default class Vector2
     /**
      * Calculates the distance between this vector and a given vector
      *
-     * @param {NGINT.Vector2} v - The vector calculate the distance to
+     * @param {TILES2D.Vector2} v - The vector calculate the distance to
      *
      * @return {number} the distance between the vectors
      */
@@ -462,7 +462,7 @@ export default class Vector2
     /**
      * Calculates the squared distance between this vector and a given vector
      *
-     * @param {NGINT.Vector2} v - The vector calculate the squared distance to
+     * @param {TILES2D.Vector2} v - The vector calculate the squared distance to
      *
      * @return {number} the squared distance between the vectors
      */
@@ -475,10 +475,10 @@ export default class Vector2
     /**
      * Makes a linear interpolation between this vector and a given vector
      *
-     * @param {NGINT.Vector2} v - The vector to lerp to
+     * @param {TILES2D.Vector2} v - The vector to lerp to
      * @param {number} a - The amount to interpolate between the vectors
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     lerp(v, a)
     {
@@ -493,7 +493,7 @@ export default class Vector2
      * @param {number} dx - The offset value for x position
      * @param {number} dy - The offset value for y position
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     offset(dx = 0, dy = 0)
     {
@@ -505,9 +505,9 @@ export default class Vector2
     /**
      * Makes this vector looks to the position of a given vector
      *
-     * @param {NGINT.Vector2} v - The vector to look at
+     * @param {TILES2D.Vector2} v - The vector to look at
      *
-     * @return {NGINT.Vector2} this vector for chaining
+     * @return {TILES2D.Vector2} this vector for chaining
      */
     lookAt(v)
     {

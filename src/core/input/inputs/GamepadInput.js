@@ -2,7 +2,7 @@
   * The GamepadInput object is used to manage the gamepad inputs
   *
   * @class
-  * @memberof NGINT
+  * @memberof TILES2D
   * @author Fabio Toste
 */
 export default class GamepadInput
