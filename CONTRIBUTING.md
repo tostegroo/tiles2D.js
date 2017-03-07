@@ -26,8 +26,7 @@ To setup for making changes you will need to take a few steps, we've outlined th
 1. Ensure you have node.js installed. You can download node.js from [nodejs.org][node]. Because
 tiles2D uses modern JS features, you will need a modern version of node. v6+ is recommended.
 
-2. Fork the [tostegroo][tiles2D] repository, if you are unsure how to do this GitHub has a guides
-for the [command line][fork-cli] and for the [GitHub Client][fork-gui].
+2. Fork the [tostegroo][tiles2D] repository.
 
 3. Next, run `npm install` from within your clone of your fork. That will install dependencies
 necessary to build tiles2D.js
@@ -48,12 +47,6 @@ Here is our branch breakdown:
 Your change should be made directly to the branch in your fork, or to a branch in your fork made off of
 one of the above branches.
 
-### Testing Your Change
-
-You can test your change by using the automated tests packaged with tiles2D.js. You can run these tests
-by running `npm test` from the command line. If you fix a bug please add a test that will catch that
-bug if it ever happens again. This prevents regressions from sneaking in.
-
 ### Submitting Your Change
 
 After you have made and tested your change, commit and push it to your fork. Then, open a Pull Request
@@ -61,19 +54,10 @@ from your fork to the main tiles2D.js repository on the branch you used in the `
 
 ## Quickie Code Style Guide
 
-- Use 4 spaces for tabs, never tab characters.
+- Use 4 "spaces" tabs, never space characters.
 - No trailing whitespace, blank lines should have no whitespace.
 - Always favor strict equals `===` unless you *need* to use type coercion.
-- Follow conventions already in the code, and listen to eslint.
-- **Ensure changes are eslint validated.** After making a change be sure to run the build process
-to ensure that you didn't break anything. You can do this with `npm test` which will run
-eslint, rebuild, then run the test suite.
-
-[issues]: https://github.com/tostegroo/tiles2D.js/issues
-[tiles2D]: https://github.com/tostegroo/tiles2D.js
-[fiddle]: http://jsfiddle.net
-[jsbin]: http://jsbin.com/
-[node]: http://nodejs.org
+- Follow conventions already in the code, please.
 
 ## Contributor Code of Conduct
 
