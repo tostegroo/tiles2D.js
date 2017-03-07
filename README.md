@@ -5,7 +5,7 @@ The aim of this project is to create a 2d "engine" for platform games that uses 
 
 ### Why do not use box2d instead?
 
-Ok, box2d is amazing, I know that. But can be a overhead if you need something more simple and that's the main objective of tiles2D,
+Ok, box2d is amazing, I know that. But can be an overhead if you need something more simple and that's the main objective of tiles2D,
 create a simple physics for 2d games, getting the max of performance of the browser.
 
 Tiles2D uses 2 types of "bodies" to calculate collisions.
@@ -15,7 +15,7 @@ One: - like box2d - This type of body is a kind of float body, that needs to be 
 Second:  Tiles2D has a special type of body, the "Tile", with this kind of body the engine can calculate collisions much faster,
 tiles have always the same width and height, so It can get the positions of the tiles using much less interactions per body.
 
-Also It will implement a environment model to make ease to make vibrant and dynamic worlds for any game.
+Also It will implement an environment model to make ease to make vibrant and dynamic worlds for any game.
 
 ### What is the stage of development?
 
