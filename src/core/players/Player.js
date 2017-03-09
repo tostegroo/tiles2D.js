@@ -33,7 +33,7 @@ export default class Player extends Body
         this.dragCoefficient = DRAG_COEFFICIENT.human;
         this.mass = 80;
         this.friction = 0.5;
-        this.bounciness = 0.9;
+        this.bounciness = 0;
     }
 
     walkMove(value)

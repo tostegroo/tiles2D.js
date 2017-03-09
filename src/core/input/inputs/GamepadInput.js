@@ -17,8 +17,8 @@ export default class GamepadInput
             this.hasGamepadSupport = true;
             this.getGamepads = 'webkitGetGamepads';
         }
-        
-        this.threshold = 0.3;
+
+        this.threshold = 0.2;
         this.onGamepadConnected = null;
         this.onGamepadDisconnected = null;
 
@@ -52,8 +52,6 @@ export default class GamepadInput
         return button;
     }
 
-
-
     update(item)
     {
         if(this.hasGamepadSupport)
@@ -67,27 +65,38 @@ export default class GamepadInput
 
                 if(gp!=null)
                 {
-                    if(gp.buttons[bt] && gp.buttons[bt].pressed==true && item.canHit)
+                    if(typeof(bt)=='number')
                     {
-                        if (item.oneHit)
-                            item.canHit = false;
+                        if(gp.buttons[bt] && gp.buttons[bt].pressed==true && item.canHit)
+                        {
+                            if (item.oneHit)
+                                item.canHit = false;
 
-                        if(item.onPress)
-                            item.onPress(gp.buttons[bt].value);
+                            if(item.onPress)
+                                item.onPress(gp.buttons[bt].value);
 
-                        item.pressed = true;
+                            item.pressed = true;
+                        }
+
+                        if(item.pressed && gp.buttons[bt] && gp.buttons[bt].pressed==false)
+                        {
+                            if(item.onRelease)
+                                item.onRelease(gp.buttons[bt].value);
+
+                            item.canHit = true;
+                            item.pressed = false;
+                        }
                     }
-
-                    if(item.pressed && gp.buttons[bt] && gp.buttons[bt].pressed==false)
+                    else
                     {
-                        if(item.onRelease)
-                            item.onRelease(gp.buttons[bt].value);
+                        if(gp.axes)
+                        {
+                            console.log(bt);
 
-                        item.canHit = true;
-                        item.pressed = false;
+                            if(item.onMove)
+                                item.onMove(gp.axes[0]);
+                        }
                     }
-
-                    //console.log(gp);
                 }
             }
         }
