@@ -9,7 +9,7 @@
     "2d",
     "platform"
   ],
-  "homepage": "https://www.tiles2D.com/",
+  "homepage": "https://github.com/tostegroo/tiles2D",
   "author": "Fabio Toste <tostegroo@gmail.com> (http://fabiottoste.com)",
   "contributors": [],
   "main": "Gruntfile.js",

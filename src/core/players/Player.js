@@ -38,27 +38,20 @@ export default class Player extends Body
 
     walkMove(value)
     {
-        if (value == 0)
-        {
-            this.move.x = false;
-            this.forceDirection.x = 0;
-        }else
-        {
-            this.move.x = true;
-            this.forceDirection.x = value;
-        }
+        this.move.x = (value == 0) ? false : true;
+        this.forceDirection.x = value;
     }
 
-    walkLeft()
+    walkLeft(value)
     {
         this.move.x = true;
-        this.forceDirection.x = -1;
+        this.forceDirection.x = !isNaN(value) ? Math.abs(value) * -1 : -1;
     }
 
-    walkRight()
+    walkRight(value)
     {
         this.move.x = true;
-        this.forceDirection.x = 1;
+        this.forceDirection.x = !isNaN(value) ? value : 1;
     }
 
     stop()
@@ -67,16 +60,16 @@ export default class Player extends Body
         this.forceDirection.x = 0;
     }
 
-    walkUp()
+    walkUp(value)
     {
         this.move.y = true;
-        this.forceDirection.y = -1;
+        this.forceDirection.y = !isNaN(value) ? value * -1 : -1;
     }
 
-    walkDown()
+    walkDown(value)
     {
         this.move.y = true;
-        this.forceDirection.y = 1;
+        this.forceDirection.y = !isNaN(value) ? value : 1;
     }
 
     stopy()

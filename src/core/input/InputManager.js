@@ -27,7 +27,9 @@ export default class InputManager
             inputs.name = name;
             inputs.canHit = true;
             inputs.pressed = false;
-            inputs.useasDPad = false;
+            inputs.moved = false;
+            inputs.onlyDigital = inputs.onlyDigital || false;
+            inputs.gamepadIndex = inputs.gamepadIndex || 0;
 
             if(inputs.keyboard!=undefined)
             {

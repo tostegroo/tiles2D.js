@@ -38,18 +38,18 @@ export const DEG_TO_RAD = Math.PI / 180;
  */
 export default class MathUtil
 {
-    static analogicToDigital(v, t)
+    static analogicToDigital(v, threshold)
     {
-        v = percentageFit(v, t, 1);
+        v = MathUtil.percentageFit(v, threshold, 1);
         return (v == 0) ? 0 : (v > 0) ? 1 : -1;
     }
 
-    static percentageFit(v, from, to)
+    static percentageFit(v, min, max)
     {
-        let signal = (v > 0) ? 1 : -1;
+        let signal = Math.sign(v);
         v = Math.abs(v);
-        let returnValue = v-from;
-        let fitValue = to-from;
+        let returnValue = v-min;
+        let fitValue = max-min;
         returnValue  = (returnValue <0) ? 0 : returnValue;
         returnValue  = (returnValue > fitValue) ? fitValue  : returnValue;
         returnValue  = returnValue / fitValue;
@@ -119,7 +119,7 @@ export default class MathUtil
 
     static clampNum(v)
     {
-        return clamp(v, 0, 1);
+        return MathUtil.clamp(v, 0, 1);
     }
 
     static rand(min, max)
@@ -132,9 +132,9 @@ export default class MathUtil
         i = Math.abs(i);
 
         if (c < t)
-            return clamp(c + i, c, t);
+            return MathUtil.clamp(c + i, c, t);
         else if (c > t)
-            return clamp(c - i, t, c);
+            return MathUtil.clamp(c - i, t, c);
 
         return t;
     }

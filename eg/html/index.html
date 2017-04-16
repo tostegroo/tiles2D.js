@@ -15,7 +15,7 @@
     <script src="../../dist/js/tiles2D.js"></script>
     <script>
 
-        TILES2D.ScreenConsole.add(1920-300, 0, 300, 150);
+        TILES2D.ScreenConsole.add(1400-300, 0, 300, 150);
 
         //var world = new World(new TILES2D.Environment(1.2, {x: 0, y: 0}));
         var world = new TILES2D.World();
@@ -25,7 +25,7 @@
         var player = new TILES2D.Player(new TILES2D.DomSprite(80, 20, 50, 80, "#000"));
         var player2 = new TILES2D.Player(new TILES2D.DomSprite(130, 20, 50, 80, "#990000"));
         world.addBody(player);
-        //world.addBody(player2);
+        world.addBody(player2);
 
         TILES2D.TiledLoader.load('./assets/tiles.json', './assets/tiles.png', function(data)
         {
@@ -40,7 +40,8 @@
                 keyboard: [TILES2D.KEYBOARD.RIGHT],
                 gamepad: [TILES2D.GAMEPAD.L_AXIS_X_RIGHT, TILES2D.GAMEPAD.DPAD_RIGHT],
                 onPress: player.walkRight.bind(player),
-                onRelease: player.stop.bind(player)
+                onRelease: player.stop.bind(player)/*,
+                onMove: player.walkMove.bind(player)*/
             }
         );
 
@@ -50,7 +51,8 @@
                 keyboard: [TILES2D.KEYBOARD.LEFT],
                 gamepad: [TILES2D.GAMEPAD.L_AXIS_X_LEFT, TILES2D.GAMEPAD.DPAD_LEFT],
                 onPress: player.walkLeft.bind(player),
-                onRelease: player.stop.bind(player)
+                onRelease: player.stop.bind(player)/*,
+                onMove: player.walkMove.bind(player)*/
             }
         );
 

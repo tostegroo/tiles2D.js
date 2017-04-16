@@ -1,5 +1,5 @@
 /**
- * String of the current PIXI version.
+ * String of the current TILES2D version.
  *
  * @static
  * @constant

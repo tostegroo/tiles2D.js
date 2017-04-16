@@ -349,7 +349,7 @@ export default class World
         b.velocity[a] += deltatime * b.acceleration[a];
         b.shape[a] += (deltatime * b.velocity[a]) * SETTINGS.PIXEL_METER_UNIT;
 
-        if(a=='y')
+        /*if(a=='y')
         {
             ScreenConsole.log(
                 "f_c: "+ friction_coefficient,
@@ -360,8 +360,8 @@ export default class World
                 "c_l: "+ b._contactfriction[ia]['1'],
                 "c_r: "+ b._contactfriction[ia]['-1']
             )
-        }
-
+        }*/
+        
         b._direction[a] = b.velocity[a] > 0 ? -1 : b.velocity[a] < 0 ? 1 : 0;
     }
 
