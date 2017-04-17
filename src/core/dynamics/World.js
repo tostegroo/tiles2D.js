@@ -155,8 +155,6 @@ export default class World
                 //Validates all the collisions
                 this._keepInBounds(body, AXIS.X);
                 this._keepInBounds(body, AXIS.Y);
-
-                this._calculateTileCollision(body);
             }
 
             //Body collision loop
@@ -167,6 +165,8 @@ export default class World
                 //loop through all other bodies
                 for (o = b + 1; o < this.bodyCount; o++)
                     this._calculateBodyCollision(body, this.bodyList[o]);
+
+                this._calculateTileCollision(body);
 
                 //Do the update of the body
                 body.update(deltatime);
@@ -349,19 +349,6 @@ export default class World
         b.velocity[a] += deltatime * b.acceleration[a];
         b.shape[a] += (deltatime * b.velocity[a]) * SETTINGS.PIXEL_METER_UNIT;
 
-        /*if(a=='y')
-        {
-            ScreenConsole.log(
-                "f_c: "+ friction_coefficient,
-                "f_f: "+ b._frictionalForce[a],
-                "n_f: "+ b._netForce[ia],
-                "vlc: "+ -b.velocity[a],
-                "imp: "+ -b._impulseDirection[ia],
-                "c_l: "+ b._contactfriction[ia]['1'],
-                "c_r: "+ b._contactfriction[ia]['-1']
-            )
-        }*/
-        
         b._direction[a] = b.velocity[a] > 0 ? -1 : b.velocity[a] < 0 ? 1 : 0;
     }
 
