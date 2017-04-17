@@ -281,7 +281,7 @@ export default class World
             b2_new_velocity = {x: 0, y: 0};
 
         let intersectionData = b1.shape.intersection(b2.shape);
-
+        
         if(intersectionData)
         {
             b1_new_velocity.x = ((b1.mass - b2.mass) * b1.velocity.x + (2 * b2.mass) * b2.velocity.x) / (b1.mass + b2.mass);

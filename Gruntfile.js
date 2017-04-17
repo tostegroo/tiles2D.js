@@ -8,7 +8,7 @@ module.exports = function(grunt)
         watch: {
             js: {
                 files: ['src/**/*.js'],
-                tasks: ['rollup']
+                tasks: ['rollup', 'copy']
             }
         },
         babel: {
@@ -58,6 +58,11 @@ module.exports = function(grunt)
                 }
             }
         },
+        copy: {
+            main: {
+                files: [{expand: false, src: ['./dist/js/<%= pkg.name %>.js'], dest: 'docs/js/<%= pkg.name %>.js', filter: 'isFile'}]
+            }
+        },
         nodeunit: {
             all: ['test/*_test.js'],
             options: {
@@ -75,13 +80,14 @@ module.exports = function(grunt)
     //Grunt plugins
     grunt.loadNpmTasks('grunt-babel');              // Babel
     grunt.loadNpmTasks('grunt-rollup');             // Rollup
+    grunt.loadNpmTasks('grunt-contrib-copy');       // Copy Files
     grunt.loadNpmTasks('grunt-contrib-uglify');     // Minify JS
     grunt.loadNpmTasks('grunt-contrib-watch');      // Watch JS for live changes
     grunt.loadNpmTasks('grunt-contrib-nodeunit');   // Unit testing
     grunt.loadNpmTasks('grunt-contrib-clean');      // Clean up build files
 
     //Tasks
-    grunt.registerTask('dev', ['rollup' , 'watch']);
+    grunt.registerTask('dev', ['rollup', 'copy', 'watch']);
     grunt.registerTask('test', ['babel', 'nodeunit']);
     grunt.registerTask('clean_dist', ['clean', 'babel', 'rollup', 'uglify']);
     grunt.registerTask('dist', ['babel', 'rollup', 'uglify']);
